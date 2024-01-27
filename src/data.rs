@@ -1,3 +1,15 @@
+pub fn templify_file_blank() -> String {
+    let content = "# This file is used by templify to generate new files from this template.
+# You can use the following variables in this file:
+# description:The description of the template
+# path:The path of the template
+description:
+path:.
+";
+
+    return content.to_string();
+}
+
 pub fn get_init_readme_content() -> String {
     let content = "# Welcome to templify!
 
