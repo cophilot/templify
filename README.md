@@ -9,17 +9,17 @@
 
 <!-- Badges -->
 <div align="center">
-   <a href="https://github.com/phil1436/templify/releases">
-       <img src="https://img.shields.io/github/v/release/phil1436/templify?display_name=tag" alt="current realease" />
+   <a href="https://github.com/cophilot/templify/releases">
+       <img src="https://img.shields.io/github/v/release/cophilot/templify?display_name=tag" alt="current realease" />
    </a>
-   <a href="https://github.com/phil1436/templify/blob/main/LICENSE">
-       <img src="https://img.shields.io/github/license/phil1436/templify" alt="license" />
+   <a href="https://github.com/cophilot/templify/blob/main/LICENSE">
+       <img src="https://img.shields.io/github/license/cophilot/templify" alt="license" />
    </a>
-   <a href="https://github.com/phil1436/templify/stargazers">
-       <img src="https://img.shields.io/github/stars/phil1436/templify" alt="stars" />
+   <a href="https://github.com/cophilot/templify/commits/main">
+       <img src="https://img.shields.io/github/last-commit/cophilot/templify" alt="last commit" />
    </a>
-   <a href="https://github.com/phil1436/templify/commits/main">
-       <img src="https://img.shields.io/github/last-commit/phil1436/templify" alt="last commit" />
+   <a href="https://github.com/cophilot/templify/stargazers">
+       <img src="https://img.shields.io/github/stars/cophilot/templify" alt="stars" />
    </a>
 </div>
 
@@ -36,12 +36,12 @@
 
 ---
 
-## [Release Notes](https://github.com/phil1436/templify/blob/master/CHANGELOG.md)
+## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.0.1](https://github.com/phil1436/templify/tree/0.0.1)
+### [v0.0.1](https://github.com/cophilot/templify/tree/0.0.1)
 
 -   _Initial release_
 
 ---
 
-by [Philipp B.](https://github.com/phil1436)
+by [Philipp B.](https://github.com/cophilot)
