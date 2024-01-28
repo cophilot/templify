@@ -1,0 +1,42 @@
+#!/bin/bash
+
+##########################
+### templify installer ###
+##########################
+
+echo "Installing templify..."
+echo "This will install a binary to /usr/local/bin"
+
+read -p "Are you sure you want to continue? (y/N) " response
+if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+    echo "No"
+    echo "Aborting."
+    exit 1
+fi
+echo "Yes"
+
+echo "Looking for the latest release..."
+## Get meta data from the latest release
+json=$(curl -s https://api.github.com/repos/cophilot/templify/releases/latest)
+
+# get the tag name of the latest release
+tag=$(echo $json | grep -Po '"tag_name": "\K.*?(?=")')
+echo "Found tag: $tag"
+url=https://github.com/cophilot/templify/releases/download/$tag/tpy
+
+# download the binary and save as an executable
+rm -f /usr/local/bin/tpy
+
+echo "Downloading binary from $url ..."
+curl -L $url -o /usr/local/bin/tpy
+
+# check if the download was successful
+if [ $? -ne 0 ]; then
+  echo "Download failed! Exiting."
+  exit 1
+fi
+chmod +x /usr/local/bin/tpy
+
+echo "templify successfully installed to /usr/local/bin/tpy"
+echo "Run 'tpy help' to get started"
+
