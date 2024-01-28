@@ -30,6 +30,32 @@
 
 ---
 
+## Concept
+
+---
+
+## Installation
+
+### Linux
+
+Run the following command in your terminal:
+
+```bash
+curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | sudo bash
+```
+
+or download the binary from the [latest release](https://github.com/cophilot/templify/releases/latest) and place it in your `$PATH`.
+
+### Windows
+
+Download the binary from the [latest release](https://github.com/cophilot/templify/releases/latest) and add it to your [Path](https://medium.com/@kevinmarkvi/how-to-add-executables-to-your-path-in-windows-5ffa4ce61a53).
+
+---
+
+## Usage
+
+---
+
 ## Bugs
 
 -   _no known bugs_
