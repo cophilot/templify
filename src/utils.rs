@@ -1,3 +1,5 @@
+use std::{io::Write, path::Path};
+
 pub fn parse_templify_file(file_path: &str) -> std::collections::HashMap<String, String> {
     let mut map = std::collections::HashMap::new();
 
@@ -26,8 +28,45 @@ pub fn parse_templify_file(file_path: &str) -> std::collections::HashMap<String,
     return map;
 }
 
+pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str) {
+    let paths = std::fs::read_dir(path).unwrap();
+    for path in paths {
+        let path = path.unwrap().path();
+        let file_name = path.file_name().unwrap().to_str().unwrap();
+
+        if file_name == ".templify" {
+            continue;
+        }
+
+        let new_file_name = file_name.replace("$$name$$", given_name);
+        let new_path = format!("{}/{}", new_path, new_file_name);
+
+        if path.is_dir() {
+            std::fs::create_dir(&new_path).unwrap();
+            generate_template_dir(&path.to_str().unwrap(), &new_path, given_name);
+        } else {
+            generate_template_file(&path.to_str().unwrap(), &new_path, given_name);
+        }
+    }
+}
+
+pub fn generate_template_file(path: &str, new_path: &str, given_name: &str) {
+    let file_content = std::fs::read_to_string(path).unwrap();
+    let file_content = file_content.replace("$$name$$", given_name);
+
+    if Path::new(new_path).exists() {
+        println!("File {} already exists.", new_path);
+        return;
+    }
+
+    let mut new_file = std::fs::File::create(new_path).unwrap();
+    new_file.write_all(file_content.as_bytes()).unwrap();
+
+    println!("Created file {}", new_path);
+}
+
 pub fn check_if_templify_initialized() -> bool {
-    if !std::path::Path::new(".templates").exists() {
+    if !Path::new(".templates").exists() {
         println!("Templify is not initialized in this project.");
         println!("Run `tpy init` to initialize Templify in your project.");
         return false;

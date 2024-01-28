@@ -1,3 +1,5 @@
+use std::fs::read_dir;
+
 use crate::utils;
 
 pub fn list() {
@@ -6,7 +8,7 @@ pub fn list() {
     }
 
     // get all folders in .templates
-    let paths = std::fs::read_dir(".templates").unwrap();
+    let paths = read_dir(".templates").unwrap();
 
     println!("Available templates:");
     for path in paths {
@@ -63,7 +65,14 @@ pub fn generate(args: Vec<String>) {
 
     // create dir and all subdirs if they don't exist
     std::fs::create_dir_all(&new_path).unwrap();
-    let files = std::fs::read_dir(&format!(".templates/{}/.templify", template_name)).unwrap();
+    //let files = std::fs::read_dir(&format!(".templates/{}/.templify", template_name)).unwrap();
+    utils::generate_template_dir(
+        &format!(".templates/{}", template_name),
+        &new_path,
+        given_name,
+    );
+
+    println!("Files generated successfully.");
 }
 
 pub fn new(args: Vec<String>) {
@@ -100,7 +109,7 @@ pub fn new(args: Vec<String>) {
 }
 
 pub fn version() {
-    println!("templify v{}", env!("CARGO_PKG_VERSION"));
+    println!("templify2 v{}", env!("CARGO_PKG_VERSION"));
 }
 
 pub fn init() {
