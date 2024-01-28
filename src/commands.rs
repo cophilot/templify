@@ -109,7 +109,7 @@ pub fn new(args: Vec<String>) {
 }
 
 pub fn version() {
-    println!("templify2 v{}", env!("CARGO_PKG_VERSION"));
+    println!("templify v{}", env!("CARGO_PKG_VERSION"));
 }
 
 pub fn init() {
@@ -139,14 +139,14 @@ pub fn init() {
 }
 
 pub fn help() {
-    println!("templify help");
+    println!("templify help center");
     println!("");
     println!("Usage: tpy <command>");
     println!("");
     println!("Commands:");
-    println!("  [ help | h ]                                    Show this help message");
+    println!("  [ help | -h ]                                   Show this help message");
     println!(
-        "  [ version | v ]                                 Print the current version of templify"
+        "  [ version | -v ]                                Print the current version of templify"
     );
     println!(
         "  [ init | i ]                                    Initialize Templify in your project"

@@ -6,6 +6,8 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
 
     if args.len() < 2 {
+        println!("Welcome to templify!");
+        println!("");
         println!("Usage: tpy <command>");
         println!("Run `tpy help` for more information.");
         return;
@@ -14,9 +16,9 @@ fn main() {
     // match command
     match args[1].to_lowercase().as_str() {
         "help" => commands::help(),
-        "h" => commands::help(),
+        "-h" => commands::help(),
         "version" => commands::version(),
-        "v" => commands::version(),
+        "-v" => commands::version(),
         "init" => commands::init(),
         "i" => commands::init(),
         "new" => commands::new(args),
@@ -27,4 +29,8 @@ fn main() {
         "g" => commands::generate(args),
         _ => println!("Unknown command: {}", args[1]),
     }
+
+    println!("");
+    println!("by Philipp B.");
+    println!("Have a nice day :)");
 }

@@ -25,12 +25,22 @@
 
 ---
 
+-   [Concept](#concept)
+-   [Installation](#installation)
+    -   [Linux](#linux)
+    -   [Windows](#windows)
+-   [Template](#template)
+-   [.templify](#templify)
+-   [Usage](#usage)
+-   [Placeholders](#placeholders)
 -   [Bugs](#bugs)
--   [Release Notes](#release-notes)
 
 ---
 
 ## Concept
+
+Working on a project often requires the creation of files with a similar structure. For example, a React component often consists of a `.tsx` file, a `.scss` file and a `.test.tsx` file. Templify allows you to create templates for such files and generate them from the command line.
+It also allows you to specify the location of the generated files to keep your project structure clean.
 
 ---
 
@@ -46,13 +56,95 @@ curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | sud
 
 or download the binary from the [latest release](https://github.com/cophilot/templify/releases/latest) and place it in your `$PATH`.
 
+After installation run `tpy version` to verify that the installation was successful.
+
 ### Windows
 
 Download the binary from the [latest release](https://github.com/cophilot/templify/releases/latest) and add it to your [Path](https://medium.com/@kevinmarkvi/how-to-add-executables-to-your-path-in-windows-5ffa4ce61a53).
 
+After installation run `tpy version` to verify that the installation was successful.
+
+---
+
+## Template
+
+A template is a folder in the `.templates` directory of your project. It contains all files and subfolders that should be generated when the template is used. You can use [placeholders](#placeholders) to replace parts of the template with the given values.
+Each template must contain a `.templify` file that specifies some metadata about the template.
+
+---
+
+## .templify
+
+The `.templify` file contains metadata about the template. It is a key-value file with the following keys:
+
+-   `description`: A short description of the template
+-   `path`: The path where the generated files should be placed based on the root of the project. This can also be a path with [placeholders](#placeholders) in it.
+
 ---
 
 ## Usage
+
+```bash
+tpy [command]
+```
+
+Commands:
+
+### help
+
+```bash
+tpy help
+```
+
+Displays help for templify.
+
+### version
+
+```bash
+tpy version
+```
+
+Displays the current version of templify.
+
+### init
+
+```bash
+tpy init
+```
+
+Initializes templify in the current directory.
+
+### new
+
+```bash
+tpy new <template-name>
+```
+
+Creates a new template with the given name.
+
+### list
+
+```bash
+tpy list
+```
+
+Lists all available templates in the current project.
+
+### generate
+
+```bash
+tpy generate <template-name> <given-name>
+```
+
+Generates a file from the given template.
+
+---
+
+## Placeholders
+
+Placeholders are used to replace parts of the template with the given values. They are defined by surrounding a word with two dollar signs (`$$`):
+
+-   `$$name$$` will be replaced with the given name
 
 ---
 
