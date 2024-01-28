@@ -41,6 +41,7 @@
 
 Working on a project often requires the creation of files with a similar structure. For example, a React component often consists of a `.tsx` file, a `.scss` file and a `.test.tsx` file. Templify allows you to create templates for such files and generate them from the command line.
 It also allows you to specify the location of the generated files to keep your project structure clean.
+You can see a real world example [here](https://github.com/cophilot/templify-docs/tree/main/.templates).
 
 ---
 
