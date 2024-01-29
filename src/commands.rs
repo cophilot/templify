@@ -1,6 +1,6 @@
 use std::fs::read_dir;
 
-use crate::utils;
+use crate::{env, utils, version_control};
 
 pub fn list() {
     if !utils::check_if_templify_initialized() {
@@ -108,8 +108,28 @@ pub fn new(args: Vec<String>) {
     println!("Template {} created successfully.", template_name);
 }
 
+pub fn update() {
+    /* if !env::is_linux() {
+        println!("Updating templify is currently only supported on Linux.");
+        println!("Please visit https://github.com/cophilot/templify to download the latest version and update manually.");
+        return;
+    } */
+
+    if !version_control::is_newer_version_available() {
+        println!("Templify is already up to date.");
+        return;
+    }
+
+    println!("Updating templify...");
+
+    version_control::update().unwrap();
+
+    println!("templify updated successfully.");
+    std::process::exit(0);
+}
+
 pub fn version() {
-    println!("templify v{}", env!("CARGO_PKG_VERSION"));
+    println!("templify version {}", env!("CARGO_PKG_VERSION"));
 }
 
 pub fn init() {
@@ -146,10 +166,13 @@ pub fn help() {
     println!("Commands:");
     println!("  [ help | -h ]                                   Show this help message");
     println!(
-        "  [ version | -v ]                                Print the current version of templify"
+        "  [ version | -v ]                                Print the current version of templify",
     );
     println!(
-        "  [ init | i ]                                    Initialize Templify in your project"
+        "  [ update ]                                      Update templify to the latest version",
+    );
+    println!(
+        "  [ init | i ]                                    Initialize Templify in your project",
     );
     println!("  [ new | n ] <template-name>                     Create a new template with the given name");
     println!("  [ list | ls ]                                   List all templates");

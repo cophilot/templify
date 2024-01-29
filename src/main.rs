@@ -1,6 +1,8 @@
 mod commands;
 mod data;
+mod env;
 mod utils;
+mod version_control;
 
 fn main() {
     let args: Vec<String> = std::env::args().collect();
@@ -10,6 +12,10 @@ fn main() {
         println!("");
         println!("Usage: tpy <command>");
         println!("Run `tpy help` for more information.");
+        println!("");
+        println!("by Philipp B.");
+        println!("Have a nice day :)");
+        version_control::print_update_message();
         return;
     }
 
@@ -27,10 +33,9 @@ fn main() {
         "ls" => commands::list(),
         "generate" => commands::generate(args),
         "g" => commands::generate(args),
+        "update" => commands::update(),
         _ => println!("Unknown command: {}", args[1]),
     }
 
-    println!("");
-    println!("by Philipp B.");
-    println!("Have a nice day :)");
+    version_control::print_update_message();
 }
