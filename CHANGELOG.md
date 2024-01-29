@@ -2,9 +2,11 @@
 
 ---
 
-## [v0.0.2](https://github.com/cophilot/templify/tree/0.0.2) (2024-1-29)
+## [v0.1.0](https://github.com/cophilot/templify/tree/0.1.0) (2024-1-29)
 
--   test
+-   Added self updating feature
+-   Minor design changes
+-   Bug fixes
 
 ---
 

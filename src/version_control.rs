@@ -32,7 +32,7 @@ pub fn print_update_message() {
     if is_newer_version_available() {
         println!("");
         println!(
-            "A new version of Templify is available: {} -> {}",
+            "A new version of templify is available: {} -> {}",
             env!("CARGO_PKG_VERSION"),
             get_latest_version()
         );

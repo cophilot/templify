@@ -1,6 +1,6 @@
 use std::fs::read_dir;
 
-use crate::{env, utils, version_control};
+use crate::{utils, version_control};
 
 pub fn list() {
     if !utils::check_if_templify_initialized() {
@@ -29,7 +29,7 @@ pub fn list() {
 }
 
 pub fn generate(args: Vec<String>) {
-    if args.len() < 3 {
+    if args.len() < 4 {
         println!("Missing argument!");
         println!("Usage: tpy generate <template-name> <given-name>");
         return;
@@ -39,17 +39,17 @@ pub fn generate(args: Vec<String>) {
         return;
     }
 
-    let template_name = &args[2];
+    let template_name = &args[2].to_string();
     let given_name = &args[3];
-
-    println!("Generating new file from template {}...", template_name);
 
     let paths = std::fs::read_dir(".templates").unwrap();
     let mut found = false;
     for path in paths {
         let path = path.unwrap().path();
-        if path.is_dir() && path.file_name().unwrap().to_str().unwrap() == template_name {
+        if path.is_dir() && path.file_name().unwrap().to_str().unwrap() == template_name.to_string()
+        {
             found = true;
+
             break;
         }
     }
@@ -58,6 +58,8 @@ pub fn generate(args: Vec<String>) {
         return;
     }
 
+    println!("Generating new files from template {}...", template_name);
+
     let new_path = utils::parse_templify_file(&format!(".templates/{}/.templify", template_name))
         ["path"]
         .clone()
@@ -65,14 +67,16 @@ pub fn generate(args: Vec<String>) {
 
     // create dir and all subdirs if they don't exist
     std::fs::create_dir_all(&new_path).unwrap();
-    //let files = std::fs::read_dir(&format!(".templates/{}/.templify", template_name)).unwrap();
-    utils::generate_template_dir(
+
+    if utils::generate_template_dir(
         &format!(".templates/{}", template_name),
         &new_path,
         given_name,
-    );
-
-    println!("Files generated successfully.");
+    ) {
+        println!("Files generated successfully.");
+    } else {
+        println!("Files could not be generated.");
+    }
 }
 
 pub fn new(args: Vec<String>) {
@@ -116,7 +120,7 @@ pub fn update() {
     } */
 
     if !version_control::is_newer_version_available() {
-        println!("Templify is already up to date.");
+        println!("templify is already up to date.");
         return;
     }
 
@@ -136,7 +140,7 @@ pub fn init() {
     println!("Initializing templify...");
     // check if .templates folder exists
     if std::path::Path::new(".templates").exists() {
-        println!("Templify is already initialized in this project.");
+        println!("templify is already initialized in this project.");
         return;
     }
     std::fs::create_dir(".templates").unwrap();
@@ -146,6 +150,7 @@ pub fn init() {
     )
     .unwrap();
     std::fs::create_dir(".templates/Example").unwrap();
+    std::fs::create_dir(".templates/Example/styles").unwrap();
     std::fs::write(
         ".templates/Example/.templify",
         crate::data::get_init_example_templify_content(),
@@ -154,6 +159,16 @@ pub fn init() {
     std::fs::write(
         ".templates/Example/index.html",
         crate::data::get_init_example_index_content(),
+    )
+    .unwrap();
+    std::fs::write(
+        ".templates/Example/NOTE",
+        "This is only an example template. Feel free to delete the whole Example folder.",
+    )
+    .unwrap();
+    std::fs::write(
+        ".templates/Example/styles/$$name$$Style.css",
+        crate::data::get_init_example_style_content(),
     )
     .unwrap();
 }
