@@ -32,8 +32,17 @@
 -   [Template](#template)
 -   [.templify](#templify)
 -   [Usage](#usage)
+    -   [help](#help)
+    -   [version](#version)
+    -   [init](#init)
+    -   [new](#new)
+    -   [load](#load)
+    -   [list](#list)
+    -   [generate](#generate)
 -   [Placeholders](#placeholders)
+-   [templify-vault](#templify-vault)
 -   [Bugs](#bugs)
+-   [Release Notes](#release-notes)
 
 ---
 
@@ -123,6 +132,14 @@ tpy new <template-name>
 
 Creates a new template with the given name.
 
+### load
+
+```bash
+tpy load <url>
+```
+
+Load predefined templates from a GitHub repository into your project. The url should point to a folder inside a GitHub repository. Each folder inside there will be imported as a template in your _.templates_. See the [templify-vault](#templify-vault) for more informations.
+
 ### list
 
 ```bash
@@ -149,6 +166,20 @@ Placeholders are used to replace parts of the template with the given values. Th
 
 ---
 
+## templify-vault
+
+The [templify-vault](https://github.com/cophilot/templify-vault) repository contains some default templates that you can import with the `load` command.
+
+**_Example:_**
+
+You wanna start a new [React](https://react.dev/) project with typescript? Just run this command to import template for default components for you React app:
+
+```bash
+typ load https://github.com/cophilot/templify-vault/tree/main/React-ts
+```
+
+---
+
 ## Bugs
 
 -   _no known bugs_
@@ -157,11 +188,11 @@ Placeholders are used to replace parts of the template with the given values. Th
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.1.0](https://github.com/cophilot/templify/tree/0.1.0)
+### [v0.2.0](https://github.com/cophilot/templify/tree/0.2.0)
 
--   Added self updating feature
--   Minor design changes
--   Bug fixes
+-   New logo
+-   Added `load` command
+-   Check for internet connection before fetching resources
 
 ---
 
