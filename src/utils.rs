@@ -28,6 +28,73 @@ pub fn parse_templify_file(file_path: &str) -> std::collections::HashMap<String,
     return map;
 }
 
+pub fn load_remote_template_dir(path: &str, url: &str, first: bool) {
+    if !first {
+        if Path::new(path).exists() {
+            println!("Directory {} already exists...", path);
+            return;
+        }
+
+        std::fs::create_dir(path).unwrap();
+    }
+
+    let response = reqwest::blocking::get(url).unwrap();
+    let response: serde_json::Value = response.json().unwrap();
+    let items = response["payload"]["tree"]["items"].as_array().unwrap();
+
+    for item in items {
+        if item["contentType"] == "directory" {
+            load_remote_template_dir(
+                format!("{}/{}", path, item["name"])
+                    .replace("\"", "")
+                    .as_str(),
+                format!("{}/{}", url, item["name"])
+                    .replace("\"", "")
+                    .as_str(),
+                false,
+            );
+            continue;
+        }
+
+        if first {
+            continue;
+        }
+
+        load_remote_template_file(
+            format!("{}/{}", path, item["name"])
+                .replace("\"", "")
+                .as_str(),
+            format!("{}/{}", url, item["name"])
+                .replace("\"", "")
+                .as_str(),
+        );
+    }
+}
+
+pub fn load_remote_template_file(path: &str, url: &str) {
+    if Path::new(path).exists() {
+        println!("File {} already exists.", path);
+        return;
+    }
+
+    let response = reqwest::blocking::get(url).unwrap();
+    let response: serde_json::Value = response.json().unwrap();
+
+    let text = response["payload"]["blob"]["rawLines"].as_array().unwrap();
+    let mut text = text
+        .iter()
+        .map(|x| x.as_str().unwrap())
+        .collect::<Vec<&str>>()
+        .join("\n");
+
+    text = text.replace("\\n", "\n");
+
+    let mut new_file = std::fs::File::create(path).unwrap();
+    new_file.write_all(text.as_bytes()).unwrap();
+
+    println!("Created file {}", path);
+}
+
 pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str) -> bool {
     let paths = std::fs::read_dir(path).unwrap();
     for path in paths {
@@ -84,4 +151,16 @@ pub fn check_if_templify_initialized() -> bool {
         return false;
     }
     return true;
+}
+
+pub fn check_internet_connection() -> bool {
+    let response = reqwest::blocking::get("https://google.com");
+    if response.is_err() {
+        return false;
+    }
+    let response = response.unwrap();
+    if response.status().is_success() {
+        return true;
+    }
+    return false;
 }

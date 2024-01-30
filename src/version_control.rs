@@ -1,4 +1,4 @@
-use crate::env;
+use crate::{env, utils};
 
 pub fn update() -> Result<(), Box<dyn std::error::Error>> {
     let mut binary_ending = "";
@@ -29,6 +29,9 @@ pub fn update() -> Result<(), Box<dyn std::error::Error>> {
 }
 
 pub fn print_update_message() {
+    if !utils::check_internet_connection() {
+        return;
+    }
     if is_newer_version_available() {
         println!("");
         println!(

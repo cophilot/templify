@@ -40,6 +40,16 @@ tpy new <template-name>
 This will create a new folder in the `.templates` folder with the given name. You can now add files to this folder that will be used to generate new files from this template.
 Inside the folder you will also find a `.templify` file. This file is used by templify to generate new files from this template. Please open and read the file to learn more about how to use it.
 
+### Load templates 
+
+You can also load templates from a GitHub repository into your project:
+
+```bash
+tpy load <url>
+```
+
+The url should point to a folder inside a GitHub repository. Each folder inside there will be imported as a template in your _.templates_. See the [templify-vault](https://github.com/cophilot/templify?tab=readme-ov-file#templify-vault) for more informations.
+
 ### List all templates
 
 To list all templates, you can use the following command:
@@ -62,147 +72,8 @@ This will create a new file from the given template in the current project folde
 
 To learn more about templify, please visit the [GitHub repository](https://github.com/cophilot/templify).
 
-by Philipp B.
+by [Philipp B.](https://github.com/cophilot)
 ", env!("CARGO_PKG_VERSION"));
-
-    return content.to_string();
-}
-
-pub fn get_init_example_templify_content() -> String {
-    let content = "# This is the .templify file of the Example template.
-# This file is used by templify to generate new files from this template.
-# You can use the following variables in this file:
-# description: The description of the template
-# path: The path of the template
-description:This is an example template.
-path:templify-example/web/$$name$$Example
-";
-
-    return content.to_string();
-}
-
-pub fn get_init_example_style_content() -> String {
-    let content = "
-body {
-    font-family: sans-serif;
-    background-color: #1d1d1d;
-    color: #fff;
-}
-.centerBox {
-    width: 50%;
-    margin: 0 auto;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-}
-a {
-    color: #fff;
-}
-.mainText {
-    font-size: 1.5rem;
-}
-.logo {
-    animation: wiggle 30s linear infinite;
-}
-
-@keyframes wiggle {
-    0% {
-        transform: rotate(0deg);
-    }
-    25% {
-        transform: rotate(3deg);
-    }
-    50% {
-        transform: rotate(0deg);
-    }
-    75% {
-        transform: rotate(-3deg);
-    }
-    100% {
-        transform: rotate(0deg);
-    }
-}
-";
-
-    return content.to_string();
-}
-
-pub fn get_init_example_index_content() -> String {
-    let content = "
-<!DOCTYPE html>
-<html lang=\"en\">
-    <head>
-        <meta charset=\"UTF-8\" />
-        <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />
-        <style src=\"styles/$$name$$Style.css\"></style>
-        <title>Welcome to templify</title>
-        <style>
-            body {
-                font-family: sans-serif;
-                background-color: #1d1d1d;
-                color: #fff;
-            }
-            .centerBox {
-                width: 50%;
-                margin: 0 auto;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                justify-content: center;
-                text-align: center;
-            }
-            a {
-                color: #fff;
-            }
-            .mainText {
-                font-size: 1.5rem;
-            }
-            .logo {
-                animation: wiggle 30s linear infinite;
-            }
-
-            @keyframes wiggle {
-                0% {
-                    transform: rotate(0deg);
-                }
-                25% {
-                    transform: rotate(3deg);
-                }
-                50% {
-                    transform: rotate(0deg);
-                }
-                75% {
-                    transform: rotate(-3deg);
-                }
-                100% {
-                    transform: rotate(0deg);
-                }
-            }
-        </style>
-    </head>
-    <body>
-        <div class=\"centerBox\">
-            <img
-                class=\"logo\"
-                src=\"https://raw.githubusercontent.com/cophilot/templify/master/assets/logo.png\"
-                style=\"width: 30%\"
-                alt=\"\" />
-            <h1>Welcome to templify!</h1>
-            <p class=\"mainText\">
-                Congratulations 🥳🥳🥳 <br />You just generated your first
-                template:
-                <b>
-                    <i>$$name$$Example</i>
-                </b>
-            </p>
-            <p>By <a href=\"https://github.com/cophilot\">Philipp B.</a></p>
-        </div>
-    </body>
-</html>
-
-";
 
     return content.to_string();
 }

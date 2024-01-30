@@ -28,6 +28,30 @@ pub fn list() {
     }
 }
 
+pub fn load(args: Vec<String>) {
+    if !utils::check_internet_connection() {
+        println!("You need a internet connection for this command!");
+        return;
+    }
+    if args.len() < 3 {
+        println!("Missing argument!");
+        println!("Usage: tpy load <url>");
+        return;
+    }
+    if !utils::check_if_templify_initialized() {
+        return;
+    }
+
+    let url = &args[2];
+    if !url.starts_with("https://github.com") {
+        println!("Could not load template: {}", url);
+        println!("Only github templates are supported at the moment.");
+        return;
+    }
+    println!("Loading template from {}...", url);
+    utils::load_remote_template_dir(".templates", url, true)
+}
+
 pub fn generate(args: Vec<String>) {
     if args.len() < 4 {
         println!("Missing argument!");
@@ -118,6 +142,10 @@ pub fn update() {
         println!("Please visit https://github.com/cophilot/templify to download the latest version and update manually.");
         return;
     } */
+    if !utils::check_internet_connection() {
+        println!("You need a internet connection for this command!");
+        return;
+    }
 
     if !version_control::is_newer_version_available() {
         println!("templify is already up to date.");
@@ -149,7 +177,17 @@ pub fn init() {
         crate::data::get_init_readme_content(),
     )
     .unwrap();
-    std::fs::create_dir(".templates/Example").unwrap();
+
+    // check if there is an internet connection
+    if utils::check_internet_connection() {
+        load(vec![
+            "tpy".to_string(),
+            "load".to_string(),
+            "https://github.com/cophilot/templify-vault/tree/main/Example".to_string(),
+        ]);
+    }
+
+    /* std::fs::create_dir(".templates/Example").unwrap();
     std::fs::create_dir(".templates/Example/styles").unwrap();
     std::fs::write(
         ".templates/Example/.templify",
@@ -170,7 +208,7 @@ pub fn init() {
         ".templates/Example/styles/$$name$$Style.css",
         crate::data::get_init_example_style_content(),
     )
-    .unwrap();
+    .unwrap(); */
 }
 
 pub fn help() {
@@ -190,6 +228,7 @@ pub fn help() {
         "  [ init | i ]                                    Initialize Templify in your project",
     );
     println!("  [ new | n ] <template-name>                     Create a new template with the given name");
+    println!("  [ load | l ] <url>                              Load templates from a github repository (provide a url that points to an folder in a github repository)");
     println!("  [ list | ls ]                                   List all templates");
     println!("  [ generate | g ] <template-name> <given-name>   Generate a new file from the given template");
 }

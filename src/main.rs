@@ -31,6 +31,8 @@ fn main() {
         "n" => commands::new(args),
         "list" => commands::list(),
         "ls" => commands::list(),
+        "load" => commands::load(args),
+        "l" => commands::load(args),
         "generate" => commands::generate(args),
         "g" => commands::generate(args),
         "update" => commands::update(),

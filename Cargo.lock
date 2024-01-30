@@ -784,10 +784,11 @@ dependencies = [
 
 [[package]]
 name = "templify"
-version = "0.1.0"
+version = "0.2.0"
 dependencies = [
  "reqwest",
  "self-replace",
+ "serde_json",
 ]
 
 [[package]]
