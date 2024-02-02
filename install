@@ -87,6 +87,7 @@ chmod +x $homePath/bin/tpy
 echo "Adding $homePath/bin to PATH..."
 echo "export PATH=$homePath/bin:\$PATH" >> ~/.bashrc
 
-echo "templify successfully installed to /usr/local/bin/tpy"
+echo "templify successfully installed to $homePath/bin"
+echo "You may need to restart your shell for the changes to take effect"
 echo "Run 'tpy help' to get started"
 

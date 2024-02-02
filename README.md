@@ -61,13 +61,13 @@ You can see a real world example [here](https://github.com/cophilot/templify-doc
 Run the following command in your terminal:
 
 ```bash
-curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | sudo bash
+curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | bash
 ```
 
 Optionally you can specify a version with the `-v` flag:
 
 ```bash
-curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | sudo bash -s -- -v <version>
+curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | bash -s -- -v <version>
 ```
 
 or download the binary from the [latest release](https://github.com/cophilot/templify/releases/latest) and place it in your `$PATH`.
