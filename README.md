@@ -64,6 +64,12 @@ Run the following command in your terminal:
 curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | sudo bash
 ```
 
+Optionally you can specify a version with the `-v` flag:
+
+```bash
+curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | sudo bash -s -- -v <version>
+```
+
 or download the binary from the [latest release](https://github.com/cophilot/templify/releases/latest) and place it in your `$PATH`.
 
 After installation run `tpy version` to verify that the installation was successful.

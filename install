@@ -4,11 +4,27 @@
 ### templify installer ###
 ##########################
 
-echo "Args: $*"
+yesFlag=false
+version="latest"
+
+while getopts "yv:" opt; do
+  case $opt in
+    y)
+      yesFlag=true
+      ;;
+    v)
+      version=$OPTARG
+      ;;
+    \?)
+      echo "Invalid option: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
 
 echo "Installing templify..."
 echo "This will install a binary to /usr/local/bin"
-if [ $1 != "-y" ]; then
+if [ "$yesFlag" = false ]; then
   read -p "Are you sure you want to continue? (y/N) " response < /dev/tty
   if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
       echo "No"
@@ -18,14 +34,27 @@ if [ $1 != "-y" ]; then
 fi
 echo "Yes"
 
-echo "Looking for the latest release..."
-## Get meta data from the latest release
-json=$(curl -s https://api.github.com/repos/cophilot/templify/releases/latest)
+if [ "$version" = "latest" ]; then
+  echo "Looking for the latest release..."
+  ## Get meta data from the latest release
+  json=$(curl -s https://api.github.com/repos/cophilot/templify/releases/latest)
 
-# get the tag name of the latest release
-tag=$(echo $json | grep -Po '"tag_name": "\K.*?(?=")')
-echo "Found tag: $tag"
-url=https://github.com/cophilot/templify/releases/download/$tag/tpy
+  # get the tag name of the latest release
+  version=$(echo $json | grep -Po '"tag_name": "\K.*?(?=")')
+  echo "Found version: $version"
+else
+  echo "Looking for the release with the tag $version..."
+  #check if the tag exists
+  json=$(curl -s https://api.github.com/repos/cophilot/templify/releases/tags/$version)
+  msg=$(echo $json | grep -Po '"message": "\K.*?(?=")')
+  if [ "$msg" = "Not Found" ]; then
+    echo "Error: No release found with the tag $version"
+    exit 1
+  fi
+fi
+
+
+url=https://github.com/cophilot/templify/releases/download/$version/tpy
 
 # download the binary and save as an executable
 rm -f /usr/local/bin/tpy
