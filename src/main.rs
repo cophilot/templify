@@ -7,11 +7,15 @@ mod version_control;
 fn main() {
     let args: Vec<String> = std::env::args().collect();
 
+    unsafe { env::BASE_COMMAND_NAME = args[0].clone() };
+
     if args.len() < 2 {
         println!("Welcome to templify!");
         println!("");
-        println!("Usage: tpy <command>");
-        println!("Run `tpy help` for more information.");
+        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
+
+        println!("Usage: {} <command>", command_name);
+        println!("Run `{} help` for more information.", command_name);
         println!("");
         println!("by Philipp B.");
         println!("Have a nice day :)");

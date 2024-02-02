@@ -39,7 +39,11 @@ pub fn print_update_message() {
             env!("CARGO_PKG_VERSION"),
             get_latest_version()
         );
-        println!("Run `tpy update` to update to the newest version.");
+        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
+        println!(
+            "Run `{} update` to update to the newest version.",
+            command_name
+        );
     }
 }
 

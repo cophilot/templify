@@ -147,7 +147,11 @@ pub fn generate_template_file(path: &str, new_path: &str, given_name: &str) -> b
 pub fn check_if_templify_initialized() -> bool {
     if !Path::new(".templates").exists() {
         println!("templify is not initialized in this project.");
-        println!("Run `tpy init` to initialize templify in your project.");
+        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
+        println!(
+            "Run `{} init` to initialize templify in your project.",
+            command_name
+        );
         return false;
     }
     return true;

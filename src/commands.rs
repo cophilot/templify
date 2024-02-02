@@ -35,7 +35,8 @@ pub fn load(args: Vec<String>) {
     }
     if args.len() < 3 {
         println!("Missing argument!");
-        println!("Usage: tpy load <url>");
+        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
+        println!("Usage: {} load <url>", command_name);
         return;
     }
     if !utils::check_if_templify_initialized() {
@@ -55,7 +56,12 @@ pub fn load(args: Vec<String>) {
 pub fn generate(args: Vec<String>) {
     if args.len() < 4 {
         println!("Missing argument!");
-        println!("Usage: tpy generate <template-name> <given-name>");
+        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
+
+        println!(
+            "Usage: {} generate <template-name> <given-name>",
+            command_name
+        );
         return;
     }
 
@@ -107,7 +113,8 @@ pub fn new(args: Vec<String>) {
     // return if template name is not provided
     if args.len() < 3 {
         println!("Missing argument: template-name");
-        println!("Usage: tpy new <template-name>");
+        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
+        println!("Usage: {} new <template-name>", command_name);
         return;
     }
 
@@ -186,35 +193,14 @@ pub fn init() {
             "https://github.com/cophilot/templify-vault/tree/main/Example".to_string(),
         ]);
     }
-
-    /* std::fs::create_dir(".templates/Example").unwrap();
-    std::fs::create_dir(".templates/Example/styles").unwrap();
-    std::fs::write(
-        ".templates/Example/.templify",
-        crate::data::get_init_example_templify_content(),
-    )
-    .unwrap();
-    std::fs::write(
-        ".templates/Example/index.html",
-        crate::data::get_init_example_index_content(),
-    )
-    .unwrap();
-    std::fs::write(
-        ".templates/Example/NOTE",
-        "This is only an example template. Feel free to delete the whole Example folder.",
-    )
-    .unwrap();
-    std::fs::write(
-        ".templates/Example/styles/$$name$$Style.css",
-        crate::data::get_init_example_style_content(),
-    )
-    .unwrap(); */
 }
 
 pub fn help() {
+    let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
+
     println!("templify help center");
     println!("");
-    println!("Usage: tpy <command>");
+    println!("Usage: {} <command>", command_name);
     println!("");
     println!("Commands:");
     println!("  [ help | -h ]                                   Show this help message");
