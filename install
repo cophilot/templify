@@ -77,7 +77,13 @@ chmod +x $homePath/bin/tpy
 
 # add the binary to the PATH
 echo "Adding $homePath/bin to PATH..."
-echo "export PATH=$homePath/bin:\$PATH" >> ~/.bashrc
+export PATH=$PATH:$homePath/bin
+
+# only add this line if it is not already in the .bashrc
+if ! grep -q "export PATH=\$PATH:$homePath/bin" $HOME/.bashrc; then
+  echo "export PATH=\$PATH:$homePath/bin" >> $HOME/.bashrc
+fi
+
 
 echo "templify successfully installed to $homePath/bin"
 echo "You may need to restart your shell for the changes to take effect"

@@ -58,27 +58,39 @@ You can see a real world example [here](https://github.com/cophilot/templify-doc
 
 ### Linux
 
-Run the following command in your terminal:
+Run the following command in your terminal to isntall the latest version of templify:
 
 ```bash
-curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | bash
+curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | bash -s -- -y
 ```
 
 Optionally you can specify a version with the `-v` flag:
 
 ```bash
-curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | bash -s -- -v <version>
+curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | bash -s -- -y -v <version>
+```
+
+You can also define the installation path with the `-p` flag:
+
+```bash
+curl -s https://raw.githubusercontent.com/cophilot/templify/master/install | bash -s -- -y -p /usr/local/bin
 ```
 
 or download the binary from the [latest release](https://github.com/cophilot/templify/releases/latest) and place it in your `$PATH`.
 
-After installation run `tpy version` to verify that the installation was successful.
+You may need to restart your terminal after installation for the changes to take effect.
+
+> After installation run `tpy version` to verify that the installation was successful.
 
 ### Windows
 
-Download the binary from the [latest release](https://github.com/cophilot/templify/releases/latest) and add it to your [Path](https://medium.com/@kevinmarkvi/how-to-add-executables-to-your-path-in-windows-5ffa4ce61a53).
+1. Download the `tpy.exe` binary from the [latest release](https://github.com/cophilot/templify/releases/latest)
+2. Create a root folder for templify, e.g. `C:\Program Files\templify`
+3. Inside the root folder create a folder called `bin`
+4. Place the `tpy.exe` binary inside the `bin` folder
+5. Add the `bin` folder to your system's [PATH variable](https://medium.com/@kevinmarkvi/how-to-add-executables-to-your-path-in-windows-5ffa4ce61a53)
 
-After installation run `tpy version` to verify that the installation was successful.
+> After installation run `tpy version` to verify that the installation was successful.
 
 ---
 
