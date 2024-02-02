@@ -6,14 +6,18 @@
 
 yesFlag=false
 version="latest"
+homePath=$HOME/.templify
 
-while getopts "yv:" opt; do
+while getopts "yvp:" opt; do
   case $opt in
     y)
       yesFlag=true
       ;;
     v)
       version=$OPTARG
+      ;;
+    p)
+      homePath=$OPTARG
       ;;
     \?)
       echo "Invalid option: -$OPTARG" >&2
@@ -23,17 +27,21 @@ while getopts "yv:" opt; do
 done
 
 echo "Installing templify..."
-echo "This will install a binary to /usr/local/bin"
+echo "This will install a binary to $homePath and add it to your PATH."
 if [ "$yesFlag" = false ]; then
   read -p "Are you sure you want to continue? (y/N) " response < /dev/tty
   if [[ ! "$response" =~ ^([yY][eE][sS]|[yY])+$ ]]; then
+      # echo in line with the prompt
       echo "No"
       echo "Aborting."
       exit 1
   fi
 fi
 echo "Yes"
+# print to the console in same line
+echo "Installing..."
 
+# get version
 if [ "$version" = "latest" ]; then
   echo "Looking for the latest release..."
   ## Get meta data from the latest release
@@ -53,21 +61,31 @@ else
   fi
 fi
 
-
 url=https://github.com/cophilot/templify/releases/download/$version/tpy
 
-# download the binary and save as an executable
-rm -f /usr/local/bin/tpy
+echo "Creating installation directory $homePath..."
+mkdir -p $homePath/bin
 
+# remove any existing binary
+echo "Removing existing binary..."
+rm -f $homePath/bin/tpy
+
+# download the binary and save as an executable
 echo "Downloading binary from $url ..."
-curl -L $url -o /usr/local/bin/tpy
+curl -L $url -o $homePath/bin/tpy
 
 # check if the download was successful
 if [ $? -ne 0 ]; then
   echo "Download failed! Exiting."
   exit 1
 fi
-chmod +x /usr/local/bin/tpy
+
+echo "Download successful!"
+chmod +x $homePath/bin/tpy
+
+# add the binary to the PATH
+echo "Adding $homePath/bin to PATH..."
+echo "export PATH=$homePath/bin:\$PATH" >> ~/.bashrc
 
 echo "templify successfully installed to /usr/local/bin/tpy"
 echo "Run 'tpy help' to get started"
