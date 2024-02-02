@@ -4,6 +4,8 @@
 ### templify installer ###
 ##########################
 
+echo "Args: $*"
+
 echo "Installing templify..."
 echo "This will install a binary to /usr/local/bin"
 if [ $1 != "-y" ]; then
