@@ -8,22 +8,14 @@ yesFlag=false
 version="latest"
 homePath=$HOME/.templify
 
-while getopts "yvp:" opt; do
-  case $opt in
-    y)
-      yesFlag=true
-      ;;
-    v)
-      version=$OPTARG
-      ;;
-    p)
-      homePath=$OPTARG
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
-  esac
+# parse the flags 
+while getopts v:p:y flag
+do
+    case "${flag}" in
+        v) version=${OPTARG};;
+        p) homePath=${OPTARG};; 
+        y) yesFlag=true;;
+    esac
 done
 
 echo "Installing templify..."
