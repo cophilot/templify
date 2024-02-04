@@ -1,5 +1,7 @@
 use std::{io::Write, path::Path};
 
+use crate::types::Status;
+
 pub fn parse_templify_file(file_path: &str) -> std::collections::HashMap<String, String> {
     let mut map = std::collections::HashMap::new();
 
@@ -144,17 +146,12 @@ pub fn generate_template_file(path: &str, new_path: &str, given_name: &str) -> b
     return true;
 }
 
-pub fn check_if_templify_initialized() -> bool {
+pub fn check_if_templify_initialized() -> crate::types::Status {
     if !Path::new(".templates").exists() {
-        println!("templify is not initialized in this project.");
         let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
-        println!(
-            "Run `{} init` to initialize templify in your project.",
-            command_name
-        );
-        return false;
+        return Status::error(format!("templify is not initialized in this project.\nRun `{} init` to initialize templify in your project.",command_name));
     }
-    return true;
+    return Status::ok();
 }
 
 pub fn check_internet_connection() -> bool {

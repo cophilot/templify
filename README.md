@@ -29,7 +29,7 @@
 -   [Installation](#installation)
     -   [Linux](#linux)
     -   [Windows](#windows)
--   [Template](#template)
+-   [Templates](#templates)
 -   [.templify](#templify)
 -   [Usage](#usage)
     -   [help](#help)
@@ -94,7 +94,7 @@ You may need to restart your terminal after installation for the changes to take
 
 ---
 
-## Template
+## Templates
 
 A template is a folder in the `.templates` directory of your project. It contains all files and subfolders that should be generated when the template is used. You can use [placeholders](#placeholders) to replace parts of the template with the given values.
 Each template must contain a `.templify` file that specifies some metadata about the template.
@@ -190,10 +190,10 @@ The [templify-vault](https://github.com/cophilot/templify-vault) repository cont
 
 **_Example:_**
 
-You wanna start a new [React](https://react.dev/) project with typescript? Just run this command to import template for default components for you React app:
+You wanna start a new [React](https://react.dev/) project with [typescript](https://www.typescriptlang.org)? Just run this command to import templates for default components for you React app:
 
 ```bash
-typ load https://github.com/cophilot/templify-vault/tree/main/React-ts
+tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 ```
 
 ---
@@ -206,11 +206,12 @@ typ load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.2.0](https://github.com/cophilot/templify/tree/0.2.0)
+### [v0.2.1](https://github.com/cophilot/templify/tree/0.2.1)
 
--   New logo
--   Added `load` command
--   Check for internet connection before fetching resources
+-   Refactoring
+-   Added `-offline` flag for `init` command
+-   Added `-description` flag for `new` command
+-   Added `-path` flag for `new` command
 
 ---
 

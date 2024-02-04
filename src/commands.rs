@@ -1,10 +1,14 @@
 use std::fs::read_dir;
 
-use crate::{utils, version_control};
+use crate::{
+    types::{Command, Status},
+    utils, version_control,
+};
 
-pub fn list() {
-    if !utils::check_if_templify_initialized() {
-        return;
+pub fn list(_command: &Command) -> Status {
+    let st = utils::check_if_templify_initialized();
+    if !st.is_ok {
+        return st;
     }
 
     // get all folders in .templates
@@ -26,51 +30,42 @@ pub fn list() {
             }
         }
     }
+    return Status::ok();
 }
 
-pub fn load(args: Vec<String>) {
+pub fn load(command: &Command) -> Status {
     if !utils::check_internet_connection() {
         println!("You need a internet connection for this command!");
-        return;
-    }
-    if args.len() < 3 {
-        println!("Missing argument!");
-        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
-        println!("Usage: {} load <url>", command_name);
-        return;
-    }
-    if !utils::check_if_templify_initialized() {
-        return;
+        return Status::error("You need a internet connection for this command!".to_string());
     }
 
-    let url = &args[2];
+    let st = utils::check_if_templify_initialized();
+    if !st.is_ok {
+        return st;
+    }
+
+    let url = command.get_argument("url").value.clone();
     if !url.starts_with("https://github.com") {
         println!("Could not load template: {}", url);
         println!("Only github templates are supported at the moment.");
-        return;
+        return Status::error(format!(
+            "Invalid url: {}\nOnly github templates are supported at the moment.",
+            url
+        ));
     }
     println!("Loading template from {}...", url);
-    utils::load_remote_template_dir(".templates", url, true)
+    utils::load_remote_template_dir(".templates", url.as_str(), true);
+    return Status::ok();
 }
 
-pub fn generate(args: Vec<String>) {
-    if args.len() < 4 {
-        println!("Missing argument!");
-        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
-
-        println!(
-            "Usage: {} generate <template-name> <given-name>",
-            command_name
-        );
-        return;
+pub fn generate(command: &Command) -> Status {
+    let st = utils::check_if_templify_initialized();
+    if !st.is_ok {
+        return st;
     }
 
-    if !utils::check_if_templify_initialized() {
-        return;
-    }
-
-    let template_name = &args[2].to_string();
-    let given_name = &args[3];
+    let template_name = command.get_argument("template-name").value.clone();
+    let given_name = command.get_argument("new-name").value.clone();
 
     let paths = std::fs::read_dir(".templates").unwrap();
     let mut found = false;
@@ -83,9 +78,9 @@ pub fn generate(args: Vec<String>) {
             break;
         }
     }
+
     if !found {
-        println!("Template {} not found.", template_name);
-        return;
+        return Status::error(format!("Template {} not found.", template_name));
     }
 
     println!("Generating new files from template {}...", template_name);
@@ -93,7 +88,7 @@ pub fn generate(args: Vec<String>) {
     let new_path = utils::parse_templify_file(&format!(".templates/{}/.templify", template_name))
         ["path"]
         .clone()
-        .replace("$$name$$", given_name);
+        .replace("$$name$$", given_name.as_str());
 
     // create dir and all subdirs if they don't exist
     std::fs::create_dir_all(&new_path).unwrap();
@@ -101,62 +96,53 @@ pub fn generate(args: Vec<String>) {
     if utils::generate_template_dir(
         &format!(".templates/{}", template_name),
         &new_path,
-        given_name,
+        given_name.as_str(),
     ) {
         println!("Files generated successfully.");
+        return Status::ok();
     } else {
-        println!("Files could not be generated.");
+        return Status::error("Files could not be generated.".to_string());
     }
 }
 
-pub fn new(args: Vec<String>) {
-    // return if template name is not provided
-    if args.len() < 3 {
-        println!("Missing argument: template-name");
-        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
-        println!("Usage: {} new <template-name>", command_name);
-        return;
+pub fn new(command: &Command) -> Status {
+    let st = utils::check_if_templify_initialized();
+    if !st.is_ok {
+        return st;
     }
 
-    if !utils::check_if_templify_initialized() {
-        return;
-    }
-
-    let template_name = &args[2];
+    let template_name = command.get_argument("template-name").value.clone();
 
     println!("Creating new template: {}", template_name);
 
     let template_path = format!(".templates/{}", template_name);
     if std::path::Path::new(&template_path).exists() {
-        println!("Template already exists.");
-        return;
+        return Status::error(format!("Template {} already exists.", template_name));
     }
 
     std::fs::create_dir(&template_path).unwrap();
 
     std::fs::write(
         format!("{}/.templify", template_path),
-        crate::data::templify_file_blank(),
+        crate::data::templify_file_blank(
+            command.get_value_flag("description").clone(),
+            command.get_value_flag("path").clone(),
+        ),
     )
     .unwrap();
 
     println!("Template {} created successfully.", template_name);
+    return Status::ok();
 }
 
-pub fn update() {
-    /* if !env::is_linux() {
-        println!("Updating templify is currently only supported on Linux.");
-        println!("Please visit https://github.com/cophilot/templify to download the latest version and update manually.");
-        return;
-    } */
+pub fn update(_command: &Command) -> Status {
     if !utils::check_internet_connection() {
-        println!("You need a internet connection for this command!");
-        return;
+        return Status::error("You need a internet connection for this command!".to_string());
     }
 
     if !version_control::is_newer_version_available() {
         println!("templify is already up to date.");
-        return;
+        return Status::ok();
     }
 
     println!("Updating templify...");
@@ -167,17 +153,20 @@ pub fn update() {
     std::process::exit(0);
 }
 
-pub fn version() {
+pub fn version(_command: &Command) -> Status {
     println!("templify version {}", env!("CARGO_PKG_VERSION"));
+    return Status::ok();
 }
 
-pub fn init() {
+pub fn init(command: &Command) -> Status {
     println!("Initializing templify...");
+
     // check if .templates folder exists
     if std::path::Path::new(".templates").exists() {
         println!("templify is already initialized in this project.");
-        return;
+        return Status::ok();
     }
+
     std::fs::create_dir(".templates").unwrap();
     std::fs::write(
         ".templates/README.md",
@@ -186,35 +175,34 @@ pub fn init() {
     .unwrap();
 
     // check if there is an internet connection
-    if utils::check_internet_connection() {
-        load(vec![
-            "tpy".to_string(),
-            "load".to_string(),
-            "https://github.com/cophilot/templify-vault/tree/main/Example".to_string(),
-        ]);
+    if utils::check_internet_connection() && !command.get_bool_flag("offline") {
+        println!("Loading example template from templify-vault...");
+        utils::load_remote_template_dir(
+            ".templates",
+            "https://github.com/cophilot/templify-vault/tree/main/Example",
+            true,
+        );
     }
+    println!("templify initialized successfully.");
+    return Status::ok();
 }
 
-pub fn help() {
+pub fn help(_command: &Command) -> Status {
     let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
 
     println!("templify help center");
     println!("");
+    println!("<...> - required");
+    println!("[...] - optional");
+    println!("");
     println!("Usage: {} <command>", command_name);
     println!("");
     println!("Commands:");
-    println!("  [ help | -h ]                                   Show this help message");
-    println!(
-        "  [ version | -v ]                                Print the current version of templify",
-    );
-    println!(
-        "  [ update ]                                      Update templify to the latest version",
-    );
-    println!(
-        "  [ init | i ]                                    Initialize Templify in your project",
-    );
-    println!("  [ new | n ] <template-name>                     Create a new template with the given name");
-    println!("  [ load | l ] <url>                              Load templates from a github repository (provide a url that points to an folder in a github repository)");
-    println!("  [ list | ls ]                                   List all templates");
-    println!("  [ generate | g ] <template-name> <given-name>   Generate a new file from the given template");
+
+    let all_commands = crate::command_storage::get_all_commands();
+    for command in all_commands {
+        println!("{}", command.to_help_string());
+    }
+
+    return Status::ok();
 }

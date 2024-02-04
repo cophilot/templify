@@ -1,10 +1,17 @@
+mod command_storage;
 mod commands;
 mod data;
 mod env;
+mod executer;
+mod types;
 mod utils;
 mod version_control;
 
 fn main() {
+    // ****************************
+    // *** Welcome to templify! ***
+    // ****************************
+
     let args: Vec<String> = std::env::args().collect();
 
     unsafe { env::BASE_COMMAND_NAME = args[0].clone() };
@@ -24,7 +31,7 @@ fn main() {
     }
 
     // match command
-    match args[1].to_lowercase().as_str() {
+    /*     match args[1].to_lowercase().as_str() {
         "help" => commands::help(),
         "-h" => commands::help(),
         "version" => commands::version(),
@@ -41,6 +48,12 @@ fn main() {
         "g" => commands::generate(args),
         "update" => commands::update(),
         _ => println!("Unknown command: {}", args[1]),
+    } */
+
+    if !executer::execute(args) {
+        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
+        println!("Run `{} help` for more information.", command_name);
+        std::process::exit(1);
     }
 
     version_control::print_update_message();

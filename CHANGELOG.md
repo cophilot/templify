@@ -2,6 +2,15 @@
 
 ---
 
+## [v0.2.1](https://github.com/cophilot/templify/tree/0.2.1) (2024-2-4)
+
+-   Refactoring
+-   Added `-offline` flag for `init` command
+-   Added `-description` flag for `new` command
+-   Added `-path` flag for `new` command
+
+---
+
 ## [v0.2.0](https://github.com/cophilot/templify/tree/0.2.0) (2024-1-30)
 
 -   New logo
