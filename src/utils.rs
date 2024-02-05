@@ -30,8 +30,8 @@ pub fn parse_templify_file(file_path: &str) -> std::collections::HashMap<String,
     return map;
 }
 
-pub fn load_remote_template_dir(path: &str, url: &str, first: bool) {
-    if !first {
+pub fn load_remote_template_dir(path: &str, url: &str, force: bool, first: bool) {
+    if !first && !force {
         if Path::new(path).exists() {
             println!("Directory {} already exists...", path);
             return;
@@ -53,6 +53,7 @@ pub fn load_remote_template_dir(path: &str, url: &str, first: bool) {
                 format!("{}/{}", url, item["name"])
                     .replace("\"", "")
                     .as_str(),
+                force,
                 false,
             );
             continue;
@@ -69,12 +70,13 @@ pub fn load_remote_template_dir(path: &str, url: &str, first: bool) {
             format!("{}/{}", url, item["name"])
                 .replace("\"", "")
                 .as_str(),
+            force,
         );
     }
 }
 
-pub fn load_remote_template_file(path: &str, url: &str) {
-    if Path::new(path).exists() {
+pub fn load_remote_template_file(path: &str, url: &str, force: bool) {
+    if Path::new(path).exists() && !force {
         println!("File {} already exists.", path);
         return;
     }

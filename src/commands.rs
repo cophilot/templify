@@ -54,7 +54,12 @@ pub fn load(command: &Command) -> Status {
         ));
     }
     println!("Loading template from {}...", url);
-    utils::load_remote_template_dir(".templates", url.as_str(), true);
+    utils::load_remote_template_dir(
+        ".templates",
+        url.as_str(),
+        command.get_bool_flag("force"),
+        true,
+    );
     return Status::ok();
 }
 
@@ -135,19 +140,28 @@ pub fn new(command: &Command) -> Status {
     return Status::ok();
 }
 
-pub fn update(_command: &Command) -> Status {
+pub fn update(command: &Command) -> Status {
     if !utils::check_internet_connection() {
         return Status::error("You need a internet connection for this command!".to_string());
     }
 
-    if !version_control::is_newer_version_available() {
+    let version = command.get_value_flag("version").clone();
+
+    if !version_control::is_newer_version_available() && version == "" {
         println!("templify is already up to date.");
         return Status::ok();
     }
 
-    println!("Updating templify...");
+    if version != "" {
+        println!("Updating templify to version {}...", version);
+    } else {
+        println!("Updating templify...");
+    }
 
-    version_control::update().unwrap();
+    let st = version_control::update(version);
+    if st.is_err() {
+        return Status::error(format!("{}", st.err().unwrap()));
+    }
 
     println!("templify updated successfully.");
     std::process::exit(0);
@@ -181,6 +195,7 @@ pub fn init(command: &Command) -> Status {
             ".templates",
             "https://github.com/cophilot/templify-vault/tree/main/Example",
             true,
+            true,
         );
     }
     println!("templify initialized successfully.");
@@ -203,6 +218,8 @@ pub fn help(_command: &Command) -> Status {
     for command in all_commands {
         println!("{}", command.to_help_string());
     }
+
+    println!("To get more information please visit: https://templify.philipp-bonin.com");
 
     return Status::ok();
 }

@@ -1,4 +1,4 @@
-use crate::commands;
+use crate::commands::{self};
 use crate::types::{Argument, Command, Flag, Status};
 
 pub fn get_all_commands() -> Vec<Command> {
@@ -26,11 +26,17 @@ pub fn get_all_commands() -> Vec<Command> {
 
     // *** update ***
 
-    let update_com = Command::new(
+    let mut update_com = Command::new(
         vec!["update".to_string()],
         commands::update,
         "Update templify to the latest version.".to_string(),
     );
+
+    update_com.add_flag(Flag::new_value_flag(
+        vec!["version".to_string(), "v".to_string()],
+        "".to_string(),
+        "Update to a specific version.".to_string(),
+    ));
 
     commands.push(update_com);
 
@@ -93,7 +99,7 @@ pub fn get_all_commands() -> Vec<Command> {
     let mut load_com = Command::new(
         vec!["load".to_string(), "l".to_string()],
         commands::load,
-        "Load templates from a github repository (provide a url that points to an folder in a github repository).".to_string(),
+        "Load templates from a github repository.".to_string(),
     );
 
     load_com.add_argument(Argument::new(
@@ -101,6 +107,11 @@ pub fn get_all_commands() -> Vec<Command> {
         0,
         true,
         "The url of the github repository.".to_string(),
+    ));
+
+    load_com.add_flag(Flag::new_bool_flag(
+        vec!["force".to_string(), "f".to_string()],
+        "Force the load, even if the folder already exists.".to_string(),
     ));
 
     commands.push(load_com);

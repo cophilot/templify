@@ -2,6 +2,13 @@
 
 ---
 
+## [v0.2.2](https://github.com/cophilot/templify/tree/0.2.2) (2024-2-5)
+
+-   Added `-force` flag for `load` command
+-   Added `-version` flag for `update` command
+
+---
+
 ## [v0.2.1](https://github.com/cophilot/templify/tree/0.2.1) (2024-2-4)
 
 -   Refactoring

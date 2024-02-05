@@ -206,12 +206,10 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.2.1](https://github.com/cophilot/templify/tree/0.2.1)
+### [v0.2.2](https://github.com/cophilot/templify/tree/0.2.2)
 
--   Refactoring
--   Added `-offline` flag for `init` command
--   Added `-description` flag for `new` command
--   Added `-path` flag for `new` command
+-   Added `-force` flag for `load` command
+-   Added `-version` flag for `update` command
 
 ---
 

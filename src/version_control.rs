@@ -1,25 +1,57 @@
 use crate::{env, utils};
 
-pub fn update() -> Result<(), Box<dyn std::error::Error>> {
+pub fn update(v: String) -> Result<(), Box<dyn std::error::Error>> {
     let mut binary_ending = "";
     if env::is_windows() {
         binary_ending = ".exe";
     }
 
+    let mut version = v;
+
+    if version == "" {
+        version = get_latest_version();
+    }
+
+    if version.starts_with("v") {
+        version = version[1..].to_string();
+    }
+
     let url = format!(
-        "
-        https://github.com/cophilot/templify/releases/download/{}/tpy{}",
-        get_latest_version(),
-        binary_ending
+        "https://github.com/cophilot/templify/releases/download/{}/tpy{}",
+        version, binary_ending
     );
     // download the new binary and save it somewhere temporarily
-    let mut response = reqwest::blocking::get(url)?;
+    let response = reqwest::blocking::get(url).unwrap();
+
+    // check if the download was successful
+    if response.status() != 200 {
+        if response.status() == 404 {
+            return Err(Box::new(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!(
+                    "Could not download the new binary. The version {} does not exist.",
+                    version
+                ),
+            )));
+        } else {
+            return Err(Box::new(std::io::Error::new(
+                std::io::ErrorKind::Other,
+                format!(
+                    "Could not download the new binary. Status code: {}",
+                    response.status()
+                ),
+            )));
+        }
+    }
+
+    let mut response = response;
     let mut dest = {
         let mut d = std::env::temp_dir();
         d.push("tpy");
         std::fs::File::create(d)?
     };
     std::io::copy(&mut response, &mut dest)?;
+
     // replace the current binary with the new one
     let new_binary = format!("{}/tpy", std::env::temp_dir().to_str().unwrap());
 
