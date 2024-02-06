@@ -6,11 +6,18 @@ pub fn get_all_commands() -> Vec<Command> {
 
     // *** help ***
 
-    let help_com = Command::new(
+    let mut help_com = Command::new(
         vec!["help".to_string(), "h".to_string()],
         commands::help,
         "Show this help message.".to_string(),
     );
+
+    help_com.add_argument(Argument::new(
+        "command".to_string(),
+        0,
+        false,
+        "The command to show help for.".to_string(),
+    ));
 
     commands.push(help_com);
 
@@ -136,6 +143,11 @@ pub fn get_all_commands() -> Vec<Command> {
         1,
         true,
         "The name of the new file.".to_string(),
+    ));
+
+    generate_com.add_flag(Flag::new_bool_flag(
+        vec!["strict".to_string()],
+        "If enabled the template name must match exactly.".to_string(),
     ));
 
     commands.push(generate_com);

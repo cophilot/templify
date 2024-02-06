@@ -69,17 +69,41 @@ pub fn generate(command: &Command) -> Status {
         return st;
     }
 
-    let template_name = command.get_argument("template-name").value.clone();
+    let strict = command.get_bool_flag("strict");
+
+    let mut template_name = command.get_argument("template-name").value.clone();
+    let parsed_template_name = template_name.clone().to_lowercase().to_string();
+    let template_name_raw = template_name.clone().to_string();
+
     let given_name = command.get_argument("new-name").value.clone();
 
     let paths = std::fs::read_dir(".templates").unwrap();
     let mut found = false;
     for path in paths {
         let path = path.unwrap().path();
-        if path.is_dir() && path.file_name().unwrap().to_str().unwrap() == template_name.to_string()
-        {
-            found = true;
 
+        let path_name = path
+            .file_name()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string()
+            .clone();
+
+        let parsed_path_name = path_name.clone().to_lowercase().to_string();
+
+        if path.is_dir() && parsed_path_name.starts_with(parsed_template_name.as_str()) && !strict {
+            if found {
+                return Status::error(format!(
+                    "Template {} is not unique. Please use a more specific name.",
+                    template_name_raw
+                ));
+            }
+            template_name = path_name.clone();
+            found = true;
+        } else if path.is_dir() && path_name == template_name && strict {
+            template_name = path_name.clone();
+            found = true;
             break;
         }
     }
@@ -202,15 +226,39 @@ pub fn init(command: &Command) -> Status {
     return Status::ok();
 }
 
-pub fn help(_command: &Command) -> Status {
-    let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
+pub fn help(command: &Command) -> Status {
+    let base_command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
+
+    if command.get_argument("command").is_set {
+        let mut command_name = command.get_argument("command").value.clone();
+        let all_commands = crate::command_storage::get_all_commands();
+        for c in all_commands {
+            if c.names.contains(&command_name) {
+                command_name = c.names[0].clone();
+                println!("templify help center");
+                println!("");
+                println!("<...> - required");
+                println!("[...] - optional");
+                println!("");
+                println!("Usage: {} {}", base_command_name, command_name);
+                println!("");
+                println!("{}", c.to_help_string());
+                println!(
+                    "To get more information please visit: https://templify.philipp-bonin.com/#/command/{}", command_name
+                );
+
+                return Status::ok();
+            }
+        }
+        return Status::error(format!("Command {} not found.", command_name));
+    }
 
     println!("templify help center");
     println!("");
     println!("<...> - required");
     println!("[...] - optional");
     println!("");
-    println!("Usage: {} <command>", command_name);
+    println!("Usage: {} <command>", base_command_name);
     println!("");
     println!("Commands:");
 

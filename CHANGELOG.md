@@ -2,6 +2,15 @@
 
 ---
 
+## [v0.3.0](https://github.com/cophilot/templify/tree/0.3.0) (2024-2-6)
+
+-   Bug fixes
+-   Added `command` argument for the `help` command to display help for a specific command
+-   Command `generate` uses pattern matching to determine the type of template to generate
+-   Added `-strict` flag for `generate` command to disable pattern matching
+
+---
+
 ## [v0.2.2](https://github.com/cophilot/templify/tree/0.2.2) (2024-2-5)
 
 -   Added `-force` flag for `load` command

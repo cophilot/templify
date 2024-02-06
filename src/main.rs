@@ -30,29 +30,7 @@ fn main() {
         return;
     }
 
-    // match command
-    /*     match args[1].to_lowercase().as_str() {
-        "help" => commands::help(),
-        "-h" => commands::help(),
-        "version" => commands::version(),
-        "-v" => commands::version(),
-        "init" => commands::init(),
-        "i" => commands::init(),
-        "new" => commands::new(args),
-        "n" => commands::new(args),
-        "list" => commands::list(),
-        "ls" => commands::list(),
-        "load" => commands::load(args),
-        "l" => commands::load(args),
-        "generate" => commands::generate(args),
-        "g" => commands::generate(args),
-        "update" => commands::update(),
-        _ => println!("Unknown command: {}", args[1]),
-    } */
-
     if !executer::execute(args) {
-        let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
-        println!("Run `{} help` for more information.", command_name);
         std::process::exit(1);
     }
 

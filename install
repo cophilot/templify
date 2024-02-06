@@ -18,6 +18,10 @@ do
     esac
 done
 
+if [[ $version == v* ]]; then
+  version=${version:1}
+fi
+
 echo "Installing templify..."
 echo "This will install a binary to $homePath and add it to your PATH."
 if [ "$yesFlag" = false ]; then

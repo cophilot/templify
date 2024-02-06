@@ -93,6 +93,11 @@ pub fn load_remote_template_file(path: &str, url: &str, force: bool) {
 
     text = text.replace("\\n", "\n");
 
+    // create all subdirs if they don't exist
+    let path_dir = path.split("/").collect::<Vec<&str>>();
+    let path_dir = path_dir[..path_dir.len() - 1].join("/");
+    std::fs::create_dir_all(path_dir.clone()).unwrap();
+
     let mut new_file = std::fs::File::create(path).unwrap();
     new_file.write_all(text.as_bytes()).unwrap();
 

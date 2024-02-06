@@ -18,10 +18,17 @@
    <a href="https://github.com/cophilot/templify/commits/main">
        <img src="https://img.shields.io/github/last-commit/cophilot/templify" alt="last commit" />
    </a>
+   <a href="https://templify.philipp-bonin.com/">
+       <img src="https://img.shields.io/badge/docs-visit-yellow" alt="docs" />
+   </a>
    <a href="https://github.com/cophilot/templify/stargazers">
        <img src="https://img.shields.io/github/stars/cophilot/templify" alt="stars" />
    </a>
 </div>
+
+---
+
+For a more detailed documentation visit the [templify-docs](https://templify.philipp-bonin.com/).
 
 ---
 
@@ -206,10 +213,12 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.2.2](https://github.com/cophilot/templify/tree/0.2.2)
+### [v0.3.0](https://github.com/cophilot/templify/tree/0.3.0)
 
--   Added `-force` flag for `load` command
--   Added `-version` flag for `update` command
+-   Bug fixes
+-   Added `command` argument for the `help` command to display help for a specific command
+-   Command `generate` uses pattern matching to determine the type of template to generate
+-   Added `-strict` flag for `generate` command to disable pattern matching
 
 ---
 
