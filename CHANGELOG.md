@@ -2,6 +2,12 @@
 
 ---
 
+## [v0.3.1](https://github.com/cophilot/templify/tree/0.3.1) (2024-2-9)
+
+-   Added `-dry-run` flag for the `generate` command
+
+---
+
 ## [v0.3.0](https://github.com/cophilot/templify/tree/0.3.0) (2024-2-6)
 
 -   Bug fixes

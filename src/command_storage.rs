@@ -150,6 +150,11 @@ pub fn get_all_commands() -> Vec<Command> {
         "If enabled the template name must match exactly.".to_string(),
     ));
 
+    generate_com.add_flag(Flag::new_bool_flag(
+        vec!["dry-run".to_string(), "dr".to_string()],
+        "If enabled the file will not be created and the output will be printed.".to_string(),
+    ));
+
     commands.push(generate_com);
 
     return commands;

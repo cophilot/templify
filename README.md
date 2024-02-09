@@ -213,12 +213,9 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.3.0](https://github.com/cophilot/templify/tree/0.3.0)
+### [v0.3.1](https://github.com/cophilot/templify/tree/0.3.1)
 
--   Bug fixes
--   Added `command` argument for the `help` command to display help for a specific command
--   Command `generate` uses pattern matching to determine the type of template to generate
--   Added `-strict` flag for `generate` command to disable pattern matching
+-   Added `-dry-run` flag for the `generate` command
 
 ---
 

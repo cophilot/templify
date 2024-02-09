@@ -104,7 +104,7 @@ pub fn load_remote_template_file(path: &str, url: &str, force: bool) {
     println!("Created file {}", path);
 }
 
-pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str) -> bool {
+pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str, dry_run: bool) -> bool {
     let paths = std::fs::read_dir(path).unwrap();
     for path in paths {
         let path = path.unwrap().path();
@@ -125,11 +125,11 @@ pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str) -> bo
 
         if path.is_dir() {
             std::fs::create_dir(&new_path).unwrap();
-            if !generate_template_dir(&path.to_str().unwrap(), &new_path, given_name) {
+            if !generate_template_dir(&path.to_str().unwrap(), &new_path, given_name, dry_run) {
                 return false;
             }
         } else {
-            if !generate_template_file(&path.to_str().unwrap(), &new_path, given_name) {
+            if !generate_template_file(&path.to_str().unwrap(), &new_path, given_name, dry_run) {
                 return false;
             }
         }
@@ -137,13 +137,18 @@ pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str) -> bo
     return true;
 }
 
-pub fn generate_template_file(path: &str, new_path: &str, given_name: &str) -> bool {
+pub fn generate_template_file(path: &str, new_path: &str, given_name: &str, dry_run: bool) -> bool {
     let file_content = std::fs::read_to_string(path).unwrap();
     let file_content = file_content.replace("$$name$$", given_name);
 
     if Path::new(new_path).exists() {
         println!("File {} already exists.", new_path);
         return false;
+    }
+
+    if dry_run {
+        println!("Would create file {}", new_path);
+        return true;
     }
 
     let mut new_file = std::fs::File::create(new_path).unwrap();

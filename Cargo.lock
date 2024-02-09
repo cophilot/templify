@@ -784,7 +784,7 @@ dependencies = [
 
 [[package]]
 name = "templify"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "reqwest",
  "self-replace",

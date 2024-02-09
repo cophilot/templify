@@ -70,6 +70,7 @@ pub fn generate(command: &Command) -> Status {
     }
 
     let strict = command.get_bool_flag("strict");
+    let dry_run = command.get_bool_flag("dry-run");
 
     let mut template_name = command.get_argument("template-name").value.clone();
     let parsed_template_name = template_name.clone().to_lowercase().to_string();
@@ -120,12 +121,15 @@ pub fn generate(command: &Command) -> Status {
         .replace("$$name$$", given_name.as_str());
 
     // create dir and all subdirs if they don't exist
-    std::fs::create_dir_all(&new_path).unwrap();
+    if !dry_run {
+        std::fs::create_dir_all(&new_path).unwrap();
+    }
 
     if utils::generate_template_dir(
         &format!(".templates/{}", template_name),
         &new_path,
         given_name.as_str(),
+        dry_run,
     ) {
         println!("Files generated successfully.");
         return Status::ok();
