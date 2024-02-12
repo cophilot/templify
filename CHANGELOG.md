@@ -2,6 +2,17 @@
 
 ---
 
+## [v0.4.0](https://github.com/cophilot/templify/tree/0.4.0) (2024-2-12)
+
+-   `.templify` file is now optional
+-   Added `-blank` flag for the `init` command
+-   Added placeholder `$$year$$`
+-   Added placeholder `$$month$$`
+-   Added placeholder `$$day$$`
+-   Added placeholder `$$git-name$$`
+
+---
+
 ## [v0.3.1](https://github.com/cophilot/templify/tree/0.3.1) (2024-2-9)
 
 -   Added `-dry-run` flag for the `generate` command

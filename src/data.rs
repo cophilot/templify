@@ -2,7 +2,8 @@ pub fn templify_file_blank(description: String, path: String) -> String {
     let content = format!("# This file is used by templify to generate new files from this template.
 # You can use the following variables in this file:
 # description:The description of the template 
-# path:The path of the template based on the project root (You can also use the placeholder $$name$$ to use the name of the template for the path)
+# path: The path where the file should be generated based on the project root (you can also use placeholders like $$name$$)
+
 description:{}
 path:{}
 ", description, path);
@@ -25,13 +26,13 @@ templify is a command line tool that helps you manage your project templates.
 
 ---
 
-To learn more about templify, please visit the [GitHub repository](https://github.com/cophilot/templify).
+To learn more about templify, please visit [templify.philipp-bonin.com](https://templify.philipp-bonin.com/).
 
 ---
 
 ## How to use templify?
 
-When you can see this file, you have already initialized templify in this folder. You can now create your own templates and generate new files from them.
+When you can see this file, you have already initialized templify in this project. You can now create your own templates and generate new files from them.
 
 ### Create a new template
 

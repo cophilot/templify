@@ -1,9 +1,9 @@
-use std::fs::read_dir;
-
 use crate::{
     types::{Command, Status},
     utils, version_control,
 };
+use chrono::{self, Datelike};
+use std::fs::read_dir;
 
 pub fn list(_command: &Command) -> Status {
     let st = utils::check_if_templify_initialized();
@@ -115,10 +115,15 @@ pub fn generate(command: &Command) -> Status {
 
     println!("Generating new files from template {}...", template_name);
 
-    let new_path = utils::parse_templify_file(&format!(".templates/{}/.templify", template_name))
-        ["path"]
-        .clone()
-        .replace("$$name$$", given_name.as_str());
+    let mut new_path =
+        utils::parse_templify_file(&format!(".templates/{}/.templify", template_name))["path"]
+            .clone();
+
+    new_path = new_path.replace("$$name$$", given_name.as_str());
+    new_path = new_path.replace("$$year$$", chrono::Local::now().year().to_string().as_str());
+    new_path = new_path.replace("$$month$$", &chrono::Local::now().month().to_string());
+    new_path = new_path.replace("$$day$$", &chrono::Local::now().day().to_string());
+    new_path = new_path.replace("$$git-name$$", &utils::get_git_name());
 
     // create dir and all subdirs if they don't exist
     if !dry_run {
@@ -205,11 +210,15 @@ pub fn init(command: &Command) -> Status {
 
     // check if .templates folder exists
     if std::path::Path::new(".templates").exists() {
-        println!("templify is already initialized in this project.");
-        return Status::ok();
+        return Status::error("templify is already initialized in this project.".to_string());
     }
 
     std::fs::create_dir(".templates").unwrap();
+
+    if command.get_bool_flag("blank") {
+        println!("templify initialized successfully.");
+        return Status::ok();
+    }
     std::fs::write(
         ".templates/README.md",
         crate::data::get_init_readme_content(),

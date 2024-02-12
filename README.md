@@ -213,9 +213,14 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.3.1](https://github.com/cophilot/templify/tree/0.3.1)
+### [v0.4.0](https://github.com/cophilot/templify/tree/0.4.0)
 
--   Added `-dry-run` flag for the `generate` command
+-   `.templify` file is now optional
+-   Added `-blank` flag for the `init` command
+-   Added placeholder `$$year$$`
+-   Added placeholder `$$month$$`
+-   Added placeholder `$$day$$`
+-   Added placeholder `$$git-name$$`
 
 ---
 

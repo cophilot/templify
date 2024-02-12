@@ -59,6 +59,10 @@ pub fn get_all_commands() -> Vec<Command> {
         vec!["offline".to_string(), "o".to_string()],
         "Do not fetch the example template from the internet.".to_string(),
     ));
+    init_com.add_flag(Flag::new_bool_flag(
+        vec!["blank".to_string(), "b".to_string()],
+        "Initialize only a blank .templates folder.".to_string(),
+    ));
 
     commands.push(init_com);
 

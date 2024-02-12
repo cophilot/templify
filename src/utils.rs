@@ -1,3 +1,4 @@
+use chrono::{self, Datelike};
 use std::{io::Write, path::Path};
 
 use crate::types::Status;
@@ -8,7 +9,25 @@ pub fn parse_templify_file(file_path: &str) -> std::collections::HashMap<String,
     map.insert("description".to_string(), "".to_string());
     map.insert("path".to_string(), ".".to_string());
 
-    let file_content = std::fs::read_to_string(file_path).unwrap();
+    let file_content = std::fs::read_to_string(file_path);
+    if file_content.is_err() {
+        return map;
+    }
+    let file_content = file_content.unwrap();
+
+    let mut divider = ":".to_string();
+
+    let first_line = file_content.lines().next();
+    if first_line.is_none() {
+        return map;
+    }
+
+    let first_line = first_line.unwrap().replace(" ", "");
+    if first_line.starts_with("#!") {
+        let new_divider = first_line.clone().replace("#!", "");
+
+        divider = new_divider.to_string();
+    }
 
     for line in file_content.lines() {
         let line = line.trim();
@@ -16,7 +35,7 @@ pub fn parse_templify_file(file_path: &str) -> std::collections::HashMap<String,
             continue;
         }
 
-        let parts: Vec<&str> = line.split(":").collect();
+        let parts: Vec<&str> = line.split(divider.as_str()).collect();
         if parts.len() < 2 {
             continue;
         }
@@ -114,7 +133,13 @@ pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str, dry_r
             continue;
         }
 
-        let new_file_name = file_name.replace("$$name$$", given_name);
+        let mut new_file_name = file_name.replace("$$name$$", given_name);
+        new_file_name =
+            new_file_name.replace("$$year$$", chrono::Local::now().year().to_string().as_str());
+        new_file_name =
+            new_file_name.replace("$$month$$", &chrono::Local::now().month().to_string());
+        new_file_name = new_file_name.replace("$$day$$", &chrono::Local::now().day().to_string());
+        new_file_name = new_file_name.replace("$$git-name$$", &crate::utils::get_git_name());
         let new_path = format!("{}/{}", new_path, new_file_name);
 
         // check if new_path already exists
@@ -139,7 +164,12 @@ pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str, dry_r
 
 pub fn generate_template_file(path: &str, new_path: &str, given_name: &str, dry_run: bool) -> bool {
     let file_content = std::fs::read_to_string(path).unwrap();
-    let file_content = file_content.replace("$$name$$", given_name);
+    let mut file_content = file_content.replace("$$name$$", given_name);
+    file_content =
+        file_content.replace("$$year$$", chrono::Local::now().year().to_string().as_str());
+    file_content = file_content.replace("$$month$$", &chrono::Local::now().month().to_string());
+    file_content = file_content.replace("$$day$$", &chrono::Local::now().day().to_string());
+    file_content = file_content.replace("$$git-name$$", &crate::utils::get_git_name());
 
     if Path::new(new_path).exists() {
         println!("File {} already exists.", new_path);
@@ -176,4 +206,21 @@ pub fn check_internet_connection() -> bool {
         return true;
     }
     return false;
+}
+
+pub fn get_git_name() -> String {
+    let output = std::process::Command::new("git")
+        .arg("config")
+        .arg("user.name")
+        .output();
+    if output.is_err() {
+        return "unknown".to_string();
+    }
+    let output = output.unwrap();
+    let output = String::from_utf8_lossy(&output.stdout);
+    let mut name = output.trim().to_string();
+    if name.is_empty() {
+        name = "unknown".to_string();
+    }
+    return name;
 }
