@@ -213,14 +213,10 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.4.0](https://github.com/cophilot/templify/tree/0.4.0)
+### [v0.4.1](https://github.com/cophilot/templify/tree/0.4.1)
 
--   `.templify` file is now optional
--   Added `-blank` flag for the `init` command
--   Added placeholder `$$year$$`
--   Added placeholder `$$month$$`
--   Added placeholder `$$day$$`
--   Added placeholder `$$git-name$$`
+-   Refactoring
+-   `.source` attribute will be set in the `.templify` file when a template is loaded
 
 ---
 

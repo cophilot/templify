@@ -49,13 +49,36 @@ pub fn parse_templify_file(file_path: &str) -> std::collections::HashMap<String,
     return map;
 }
 
-pub fn load_remote_template_dir(path: &str, url: &str, force: bool, first: bool) {
-    if !first && !force {
-        if Path::new(path).exists() {
-            println!("Directory {} already exists...", path);
-            return;
-        }
+pub fn load_remote_template_repo(path: &str, url: &str, force: bool) {
+    let response = reqwest::blocking::get(url).unwrap();
+    let response: serde_json::Value = response.json().unwrap();
+    let items = response["payload"]["tree"]["items"].as_array().unwrap();
 
+    for item in items {
+        if item["contentType"] == "directory" {
+            load_remote_template(
+                format!("{}/{}", path, item["name"])
+                    .replace("\"", "")
+                    .as_str(),
+                format!("{}/{}", url, item["name"])
+                    .replace("\"", "")
+                    .as_str(),
+                force,
+            );
+        }
+    }
+}
+
+fn load_remote_template(path: &str, url: &str, force: bool) {
+    if !force && Path::new(path).exists() {
+        println!(
+            "Template {} already exists...",
+            path.replace(".templates/", "")
+        );
+        return;
+    }
+
+    if !Path::new(path).exists() {
         std::fs::create_dir(path).unwrap();
     }
 
@@ -73,12 +96,72 @@ pub fn load_remote_template_dir(path: &str, url: &str, force: bool, first: bool)
                     .replace("\"", "")
                     .as_str(),
                 force,
-                false,
             );
             continue;
         }
 
-        if first {
+        load_remote_template_file(
+            format!("{}/{}", path, item["name"])
+                .replace("\"", "")
+                .as_str(),
+            format!("{}/{}", url, item["name"])
+                .replace("\"", "")
+                .as_str(),
+            force,
+        );
+    }
+
+    let temp_file = format!("{}/.templify", path);
+
+    if !Path::new(temp_file.as_str()).exists() {
+        // create .templify file
+        std::fs::File::create(temp_file).unwrap();
+    }
+
+    // write to .templify file
+    let mut file = std::fs::OpenOptions::new()
+        .write(true)
+        .append(true)
+        .open(format!("{}/.templify", path).as_str())
+        .unwrap();
+
+    // check if url already exists in .templify file
+    let file_content = std::fs::read_to_string(format!("{}/.templify", path).as_str());
+    if file_content.is_err() {
+        return;
+    }
+    let file_content = file_content.unwrap();
+    if !file_content.contains(".source") {
+        file.write_all(format!("\n\n.source:{}", url).as_bytes())
+            .unwrap();
+    }
+
+    println!("Loaded template: {}", path.replace(".templates/", ""));
+}
+
+fn load_remote_template_dir(path: &str, url: &str, force: bool) {
+    if !force && Path::new(path).exists() {
+        println!("Directory {} already exists...", path);
+        return;
+    }
+
+    std::fs::create_dir(path).unwrap();
+
+    let response = reqwest::blocking::get(url).unwrap();
+    let response: serde_json::Value = response.json().unwrap();
+    let items = response["payload"]["tree"]["items"].as_array().unwrap();
+
+    for item in items {
+        if item["contentType"] == "directory" {
+            load_remote_template_dir(
+                format!("{}/{}", path, item["name"])
+                    .replace("\"", "")
+                    .as_str(),
+                format!("{}/{}", url, item["name"])
+                    .replace("\"", "")
+                    .as_str(),
+                force,
+            );
             continue;
         }
 
@@ -94,7 +177,7 @@ pub fn load_remote_template_dir(path: &str, url: &str, force: bool, first: bool)
     }
 }
 
-pub fn load_remote_template_file(path: &str, url: &str, force: bool) {
+fn load_remote_template_file(path: &str, url: &str, force: bool) {
     if Path::new(path).exists() && !force {
         println!("File {} already exists.", path);
         return;

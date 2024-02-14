@@ -46,20 +46,13 @@ pub fn load(command: &Command) -> Status {
 
     let url = command.get_argument("url").value.clone();
     if !url.starts_with("https://github.com") {
-        println!("Could not load template: {}", url);
-        println!("Only github templates are supported at the moment.");
         return Status::error(format!(
             "Invalid url: {}\nOnly github templates are supported at the moment.",
             url
         ));
     }
     println!("Loading template from {}...", url);
-    utils::load_remote_template_dir(
-        ".templates",
-        url.as_str(),
-        command.get_bool_flag("force"),
-        true,
-    );
+    utils::load_remote_template_repo(".templates", url.as_str(), command.get_bool_flag("force"));
     return Status::ok();
 }
 
@@ -228,10 +221,9 @@ pub fn init(command: &Command) -> Status {
     // check if there is an internet connection
     if utils::check_internet_connection() && !command.get_bool_flag("offline") {
         println!("Loading example template from templify-vault...");
-        utils::load_remote_template_dir(
+        utils::load_remote_template_repo(
             ".templates",
             "https://github.com/cophilot/templify-vault/tree/main/Example",
-            true,
             true,
         );
     }

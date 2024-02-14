@@ -2,6 +2,13 @@
 
 ---
 
+## [v0.4.1](https://github.com/cophilot/templify/tree/0.4.1) (2024-2-14)
+
+-   Refactoring
+-   `.source` attribute will be set in the `.templify` file when a template is loaded
+
+---
+
 ## [v0.4.0](https://github.com/cophilot/templify/tree/0.4.0) (2024-2-12)
 
 -   `.templify` file is now optional
