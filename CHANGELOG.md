@@ -2,6 +2,17 @@
 
 ---
 
+## [v0.5.0](https://github.com/cophilot/templify/tree/0.5.0) (2024-2-17)
+
+-   Refactoring
+-   Added `reload` command
+-   Added `-name` flag for the `list` command
+-   Added `-path` flag for the `list` command
+-   Added `-template` flag for the `load` command
+-   Support for `.tpykeep` file to prevent a directory from being deleted
+
+---
+
 ## [v0.4.1](https://github.com/cophilot/templify/tree/0.4.1) (2024-2-14)
 
 -   Refactoring

@@ -16,6 +16,8 @@ fn main() {
 
     unsafe { env::BASE_COMMAND_NAME = args[0].clone() };
 
+    utils::handle_dev_mode(&args);
+
     if args.len() < 2 {
         println!("Welcome to templify!");
         println!("");

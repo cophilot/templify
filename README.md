@@ -213,10 +213,14 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.4.1](https://github.com/cophilot/templify/tree/0.4.1)
+### [v0.5.0](https://github.com/cophilot/templify/tree/0.5.0)
 
 -   Refactoring
--   `.source` attribute will be set in the `.templify` file when a template is loaded
+-   Added `reload` command
+-   Added `-name` flag for the `list` command
+-   Added `-path` flag for the `list` command
+-   Added `-template` flag for the `load` command
+-   Support for `.tpykeep` file to prevent a directory from being deleted
 
 ---
 

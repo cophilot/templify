@@ -1,11 +1,11 @@
 use crate::{
-    types::{Command, Status},
+    types::{self, Command, Status},
     utils, version_control,
 };
 use chrono::{self, Datelike};
 use std::fs::read_dir;
 
-pub fn list(_command: &Command) -> Status {
+pub fn list(command: &Command) -> Status {
     let st = utils::check_if_templify_initialized();
     if !st.is_ok {
         return st;
@@ -14,20 +14,26 @@ pub fn list(_command: &Command) -> Status {
     // get all folders in .templates
     let paths = read_dir(".templates").unwrap();
 
+    let print_path = command.get_bool_flag("path");
+    let only_name = command.get_bool_flag("name");
+
     println!("Available templates:");
     for path in paths {
         let path = path.unwrap().path();
         if path.is_dir() {
             let template_name = path.file_name().unwrap().to_str().unwrap();
-            let description =
-                utils::parse_templify_file(&format!(".templates/{}/.templify", template_name))
-                    ["description"]
-                    .clone();
-            if description.is_empty() {
-                println!("  {}", template_name);
-            } else {
-                println!("  {} - {}", template_name, description);
+
+            let meta = types::TemplateMeta::parse(template_name.to_string());
+
+            let mut print_string = template_name.to_string();
+
+            if !meta.get_description().is_empty() && !only_name {
+                print_string = format!("{} - {}", print_string, meta.get_description());
             }
+            if print_path {
+                print_string = format!("{} [{}]", print_string, meta.get_path());
+            }
+            println!("  {}", print_string);
         }
     }
     return Status::ok();
@@ -47,12 +53,106 @@ pub fn load(command: &Command) -> Status {
     let url = command.get_argument("url").value.clone();
     if !url.starts_with("https://github.com") {
         return Status::error(format!(
-            "Invalid url: {}\nOnly github templates are supported at the moment.",
+            "Invalid url: {}\nOnly templates from GitHub are supported at the moment.",
             url
         ));
     }
-    println!("Loading template from {}...", url);
-    utils::load_remote_template_repo(".templates", url.as_str(), command.get_bool_flag("force"));
+
+    let load_template = command.get_bool_flag("template");
+    if load_template {
+        println!("Loading template from {}...", url);
+        let name = url.split("/").last().unwrap();
+        let st = utils::load_remote_template(
+            format!(".templates/{}", name).as_str(),
+            url.as_str(),
+            command.get_bool_flag("force"),
+        );
+        if !st.is_ok {
+            return st;
+        }
+    } else {
+        println!("Loading template collection from {}...", url);
+        let st = utils::load_remote_template_collection(
+            ".templates",
+            url.as_str(),
+            command.get_bool_flag("force"),
+        );
+        if !st.is_ok {
+            return st;
+        }
+    }
+    return Status::ok();
+}
+
+pub fn reload(command: &Command) -> Status {
+    if !utils::check_internet_connection() {
+        println!("You need a internet connection for this command!");
+        return Status::error("You need a internet connection for this command!".to_string());
+    }
+
+    let st = utils::check_if_templify_initialized();
+    if !st.is_ok {
+        return st;
+    }
+    let strict = command.get_bool_flag("strict");
+    let mut name = command.get_argument("template-name").value.clone();
+    if name != "" {
+        let st = utils::parse_template_name(&mut name, strict);
+        if !st.is_ok {
+            return st;
+        }
+        let meta = types::TemplateMeta::parse(name.clone().to_string());
+        if meta.get_source().is_empty() {
+            return Status::error(format!("Template {} has no source.", name));
+        }
+        println!(
+            "Reloading template {} from {}...",
+            meta.get_template_name(),
+            meta.get_source()
+        );
+        let st = utils::load_remote_template(
+            format!(".templates/{}", name).as_str(),
+            meta.get_source().as_str(),
+            true,
+        );
+        if !st.is_ok {
+            return st;
+        }
+        println!("Template {} reloaded successfully.", name);
+        return Status::ok();
+    }
+
+    let paths: std::fs::ReadDir = read_dir(".templates").unwrap();
+
+    for path in paths {
+        let path = path.unwrap().path();
+        if !path.is_dir() {
+            continue;
+        }
+        let template_name = path.file_name().unwrap().to_str().unwrap();
+        let meta = types::TemplateMeta::parse(template_name.to_string());
+        if meta.get_source().is_empty() {
+            continue;
+        }
+        println!(
+            "Reloading template {} from {}...",
+            meta.get_template_name(),
+            meta.get_source()
+        );
+        let st = utils::load_remote_template(
+            format!(".templates/{}", template_name).as_str(),
+            meta.get_source().as_str(),
+            true,
+        );
+        if !st.is_ok {
+            println!("Error: Template {} could not be reloaded!", template_name);
+            println!("");
+            continue;
+        }
+        println!("Template {} reloaded successfully.", template_name);
+        println!("");
+    }
+
     return Status::ok();
 }
 
@@ -66,51 +166,19 @@ pub fn generate(command: &Command) -> Status {
     let dry_run = command.get_bool_flag("dry-run");
 
     let mut template_name = command.get_argument("template-name").value.clone();
-    let parsed_template_name = template_name.clone().to_lowercase().to_string();
-    let template_name_raw = template_name.clone().to_string();
-
     let given_name = command.get_argument("new-name").value.clone();
 
-    let paths = std::fs::read_dir(".templates").unwrap();
-    let mut found = false;
-    for path in paths {
-        let path = path.unwrap().path();
-
-        let path_name = path
-            .file_name()
-            .unwrap()
-            .to_str()
-            .unwrap()
-            .to_string()
-            .clone();
-
-        let parsed_path_name = path_name.clone().to_lowercase().to_string();
-
-        if path.is_dir() && parsed_path_name.starts_with(parsed_template_name.as_str()) && !strict {
-            if found {
-                return Status::error(format!(
-                    "Template {} is not unique. Please use a more specific name.",
-                    template_name_raw
-                ));
-            }
-            template_name = path_name.clone();
-            found = true;
-        } else if path.is_dir() && path_name == template_name && strict {
-            template_name = path_name.clone();
-            found = true;
-            break;
-        }
+    let st = utils::parse_template_name(&mut template_name, strict);
+    if !st.is_ok {
+        return st;
     }
 
-    if !found {
-        return Status::error(format!("Template {} not found.", template_name));
-    }
-
-    println!("Generating new files from template {}...", template_name);
-
-    let mut new_path =
-        utils::parse_templify_file(&format!(".templates/{}/.templify", template_name))["path"]
-            .clone();
+    println!(
+        "Generating new files from template {}...",
+        template_name.clone()
+    );
+    let meta = types::TemplateMeta::parse(template_name.clone().to_string());
+    let mut new_path = meta.get_path();
 
     new_path = new_path.replace("$$name$$", given_name.as_str());
     new_path = new_path.replace("$$year$$", chrono::Local::now().year().to_string().as_str());
@@ -221,7 +289,7 @@ pub fn init(command: &Command) -> Status {
     // check if there is an internet connection
     if utils::check_internet_connection() && !command.get_bool_flag("offline") {
         println!("Loading example template from templify-vault...");
-        utils::load_remote_template_repo(
+        utils::load_remote_template_collection(
             ".templates",
             "https://github.com/cophilot/templify-vault/tree/main/Example",
             true,

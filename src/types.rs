@@ -288,3 +288,96 @@ impl Status {
         }
     }
 }
+
+// ***TemplateMeta***
+
+pub(crate) struct TemplateMeta {
+    template_name: String,
+    file_path: String,
+    map: std::collections::HashMap<String, String>,
+}
+
+impl TemplateMeta {
+    pub fn new(template_name: String) -> TemplateMeta {
+        let mut map = std::collections::HashMap::new();
+
+        map.insert("description".to_string(), "".to_string());
+        map.insert("path".to_string(), ".".to_string());
+        map.insert(".source".to_string(), "".to_string());
+
+        let file_path = format!(".templates/{}/.templify", template_name);
+
+        let meta = TemplateMeta {
+            template_name: template_name.clone(),
+            file_path: file_path.clone(),
+            map: map,
+        };
+        return meta;
+    }
+
+    pub fn parse(template_name: String) -> TemplateMeta {
+        let mut meta = TemplateMeta::new(template_name.clone());
+
+        let file_content = std::fs::read_to_string(meta.file_path.clone());
+        if file_content.is_err() {
+            return meta;
+        }
+
+        let file_content = file_content.unwrap();
+
+        let mut divider = ":".to_string();
+
+        let first_line = file_content.lines().next();
+        if first_line.is_none() {
+            return meta;
+        }
+
+        let first_line = first_line.unwrap().replace(" ", "");
+        if first_line.starts_with("#!") {
+            let new_divider = first_line.clone().replace("#!", "");
+
+            divider = new_divider.to_string();
+        }
+
+        for line in file_content.lines() {
+            let line = line.trim();
+            if line.starts_with("#") || line.is_empty() {
+                continue;
+            }
+
+            let parts: Vec<&str> = line.split(divider.as_str()).collect();
+            if parts.len() < 2 {
+                continue;
+            }
+            let mut second_part = parts[1].to_string();
+            if parts.len() > 2 {
+                for i in 2..parts.len() {
+                    second_part.push_str(format!("{}{}", divider, parts[i]).as_str());
+                }
+            }
+
+            let key = parts[0].trim().to_string().to_lowercase();
+            let value = second_part.trim().to_string();
+
+            meta.map.insert(key, value);
+        }
+
+        return meta;
+    }
+
+    pub fn get_template_name(&self) -> String {
+        return self.template_name.clone();
+    }
+
+    pub fn get_description(&self) -> String {
+        return self.map["description"].clone();
+    }
+
+    pub fn get_path(&self) -> String {
+        return self.map["path"].clone();
+    }
+
+    pub fn get_source(&self) -> String {
+        return self.map[".source"].clone();
+    }
+}

@@ -3,60 +3,65 @@ use std::{io::Write, path::Path};
 
 use crate::types::Status;
 
-pub fn parse_templify_file(file_path: &str) -> std::collections::HashMap<String, String> {
-    let mut map = std::collections::HashMap::new();
+pub fn parse_template_name(name: &mut String, strict: bool) -> Status {
+    let template_name_raw = name.clone().to_string();
+    let parsed_template_name = name.clone().to_lowercase().to_string();
 
-    map.insert("description".to_string(), "".to_string());
-    map.insert("path".to_string(), ".".to_string());
+    let mut found = false;
+    let paths = std::fs::read_dir(".templates").unwrap();
 
-    let file_content = std::fs::read_to_string(file_path);
-    if file_content.is_err() {
-        return map;
-    }
-    let file_content = file_content.unwrap();
+    for path in paths {
+        let path = path.unwrap().path();
 
-    let mut divider = ":".to_string();
+        let path_name = path
+            .file_name()
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string()
+            .clone();
 
-    let first_line = file_content.lines().next();
-    if first_line.is_none() {
-        return map;
-    }
+        let parsed_path_name = path_name.clone().to_lowercase().to_string();
 
-    let first_line = first_line.unwrap().replace(" ", "");
-    if first_line.starts_with("#!") {
-        let new_divider = first_line.clone().replace("#!", "");
-
-        divider = new_divider.to_string();
-    }
-
-    for line in file_content.lines() {
-        let line = line.trim();
-        if line.starts_with("#") || line.is_empty() {
-            continue;
+        if path.is_dir() && parsed_path_name.starts_with(parsed_template_name.as_str()) && !strict {
+            if found {
+                return Status::error(format!(
+                    "Template {} is not unique. Please use a more specific name.",
+                    template_name_raw
+                ));
+            }
+            // assign path_name to name so that it can be used from the caller
+            *name = String::from(path_name.clone());
+            found = true;
+        } else if path.is_dir() && path_name == name.clone() && strict {
+            found = true;
+            *name = String::from(path_name.clone());
+            break;
         }
-
-        let parts: Vec<&str> = line.split(divider.as_str()).collect();
-        if parts.len() < 2 {
-            continue;
-        }
-
-        let key = parts[0].trim().to_string().to_lowercase();
-        let value = parts[1].trim().to_string();
-
-        map.insert(key, value);
     }
 
-    return map;
+    if !found {
+        return Status::error(format!("Template {} not found.", name));
+    }
+    return Status::ok();
 }
 
-pub fn load_remote_template_repo(path: &str, url: &str, force: bool) {
-    let response = reqwest::blocking::get(url).unwrap();
-    let response: serde_json::Value = response.json().unwrap();
+pub fn load_remote_template_collection(path: &str, url: &str, force: bool) -> Status {
+    let response = reqwest::blocking::get(url);
+    if response.is_err() {
+        return Status::error(format!("Failed to get template from {}", url));
+    }
+    let response = response.unwrap().json();
+    if response.is_err() {
+        return Status::error(format!("Failed to get template from {}", url));
+    }
+    let response: serde_json::Value = response.unwrap();
+
     let items = response["payload"]["tree"]["items"].as_array().unwrap();
 
     for item in items {
         if item["contentType"] == "directory" {
-            load_remote_template(
+            let st = load_remote_template(
                 format!("{}/{}", path, item["name"])
                     .replace("\"", "")
                     .as_str(),
@@ -65,30 +70,41 @@ pub fn load_remote_template_repo(path: &str, url: &str, force: bool) {
                     .as_str(),
                 force,
             );
+            if !st.is_ok {
+                return st;
+            }
         }
     }
+    return Status::ok();
 }
 
-fn load_remote_template(path: &str, url: &str, force: bool) {
+pub fn load_remote_template(path: &str, url: &str, force: bool) -> Status {
     if !force && Path::new(path).exists() {
-        println!(
+        return Status::error(format!(
             "Template {} already exists...",
             path.replace(".templates/", "")
-        );
-        return;
+        ));
     }
 
     if !Path::new(path).exists() {
         std::fs::create_dir(path).unwrap();
     }
 
-    let response = reqwest::blocking::get(url).unwrap();
-    let response: serde_json::Value = response.json().unwrap();
+    let response = reqwest::blocking::get(url);
+    if response.is_err() {
+        return Status::error(format!("Failed to get template from {}", url));
+    }
+    let response = response.unwrap().json();
+    if response.is_err() {
+        return Status::error(format!("Failed to get template from {}", url));
+    }
+    let response: serde_json::Value = response.unwrap();
+
     let items = response["payload"]["tree"]["items"].as_array().unwrap();
 
     for item in items {
         if item["contentType"] == "directory" {
-            load_remote_template_dir(
+            let st = load_remote_template_dir(
                 format!("{}/{}", path, item["name"])
                     .replace("\"", "")
                     .as_str(),
@@ -97,10 +113,13 @@ fn load_remote_template(path: &str, url: &str, force: bool) {
                     .as_str(),
                 force,
             );
+            if !st.is_ok {
+                return st;
+            }
             continue;
         }
 
-        load_remote_template_file(
+        let st = load_remote_template_file(
             format!("{}/{}", path, item["name"])
                 .replace("\"", "")
                 .as_str(),
@@ -109,6 +128,9 @@ fn load_remote_template(path: &str, url: &str, force: bool) {
                 .as_str(),
             force,
         );
+        if !st.is_ok {
+            return st;
+        }
     }
 
     let temp_file = format!("{}/.templify", path);
@@ -128,7 +150,7 @@ fn load_remote_template(path: &str, url: &str, force: bool) {
     // check if url already exists in .templify file
     let file_content = std::fs::read_to_string(format!("{}/.templify", path).as_str());
     if file_content.is_err() {
-        return;
+        return Status::ok();
     }
     let file_content = file_content.unwrap();
     if !file_content.contains(".source") {
@@ -137,23 +159,35 @@ fn load_remote_template(path: &str, url: &str, force: bool) {
     }
 
     println!("Loaded template: {}", path.replace(".templates/", ""));
+    return Status::ok();
 }
 
-fn load_remote_template_dir(path: &str, url: &str, force: bool) {
+fn load_remote_template_dir(path: &str, url: &str, force: bool) -> Status {
     if !force && Path::new(path).exists() {
-        println!("Directory {} already exists...", path);
-        return;
+        return Status::error(format!(
+            "Directory {} already exists...",
+            path.replace(".templates/", "")
+        ));
     }
 
-    std::fs::create_dir(path).unwrap();
+    if !Path::new(path).exists() {
+        std::fs::create_dir(path).unwrap();
+    }
 
-    let response = reqwest::blocking::get(url).unwrap();
-    let response: serde_json::Value = response.json().unwrap();
+    let response = reqwest::blocking::get(url);
+    if response.is_err() {
+        return Status::error(format!("Failed to get template from {}", url));
+    }
+    let response = response.unwrap().json();
+    if response.is_err() {
+        return Status::error(format!("Failed to get template from {}", url));
+    }
+    let response: serde_json::Value = response.unwrap();
     let items = response["payload"]["tree"]["items"].as_array().unwrap();
 
     for item in items {
         if item["contentType"] == "directory" {
-            load_remote_template_dir(
+            let st = load_remote_template_dir(
                 format!("{}/{}", path, item["name"])
                     .replace("\"", "")
                     .as_str(),
@@ -162,6 +196,9 @@ fn load_remote_template_dir(path: &str, url: &str, force: bool) {
                     .as_str(),
                 force,
             );
+            if !st.is_ok {
+                return st;
+            }
             continue;
         }
 
@@ -175,16 +212,26 @@ fn load_remote_template_dir(path: &str, url: &str, force: bool) {
             force,
         );
     }
+    return Status::ok();
 }
 
-fn load_remote_template_file(path: &str, url: &str, force: bool) {
+fn load_remote_template_file(path: &str, url: &str, force: bool) -> Status {
     if Path::new(path).exists() && !force {
-        println!("File {} already exists.", path);
-        return;
+        return Status::error(format!(
+            "File {} already exists...",
+            path.replace(".templates/", "")
+        ));
     }
 
-    let response = reqwest::blocking::get(url).unwrap();
-    let response: serde_json::Value = response.json().unwrap();
+    let response = reqwest::blocking::get(url);
+    if response.is_err() {
+        return Status::error(format!("Failed to get template from {}", url));
+    }
+    let response = response.unwrap().json();
+    if response.is_err() {
+        return Status::error(format!("Failed to get template from {}", url));
+    }
+    let response: serde_json::Value = response.unwrap();
 
     let text = response["payload"]["blob"]["rawLines"].as_array().unwrap();
     let mut text = text
@@ -204,6 +251,7 @@ fn load_remote_template_file(path: &str, url: &str, force: bool) {
     new_file.write_all(text.as_bytes()).unwrap();
 
     println!("Created file {}", path);
+    return Status::ok();
 }
 
 pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str, dry_run: bool) -> bool {
@@ -212,7 +260,7 @@ pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str, dry_r
         let path = path.unwrap().path();
         let file_name = path.file_name().unwrap().to_str().unwrap();
 
-        if file_name == ".templify" {
+        if file_name == ".templify" || file_name == ".tpykeep" || file_name == ".templifykeep" {
             continue;
         }
 
@@ -306,4 +354,13 @@ pub fn get_git_name() -> String {
         name = "unknown".to_string();
     }
     return name;
+}
+
+pub fn handle_dev_mode(args: &Vec<String>) {
+    if args.contains(&"-dev".to_string()) {
+        if !Path::new("dev").exists() {
+            std::fs::create_dir("dev").unwrap();
+        }
+        std::env::set_current_dir("dev").unwrap();
+    }
 }

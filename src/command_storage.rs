@@ -97,11 +97,21 @@ pub fn get_all_commands() -> Vec<Command> {
 
     // *** list ***
 
-    let list_com = Command::new(
+    let mut list_com = Command::new(
         vec!["list".to_string(), "ls".to_string()],
         commands::list,
         "List all available templates in the current project.".to_string(),
     );
+
+    list_com.add_flag(Flag::new_bool_flag(
+        vec!["name".to_string(), "n".to_string()],
+        "Show only the names of the templates.".to_string(),
+    ));
+
+    list_com.add_flag(Flag::new_bool_flag(
+        vec!["path".to_string(), "p".to_string()],
+        "Show the path of the templates.".to_string(),
+    ));
 
     commands.push(list_com);
 
@@ -110,7 +120,7 @@ pub fn get_all_commands() -> Vec<Command> {
     let mut load_com = Command::new(
         vec!["load".to_string(), "l".to_string()],
         commands::load,
-        "Load templates from a github repository.".to_string(),
+        "Load templates from a remote repository.".to_string(),
     );
 
     load_com.add_argument(Argument::new(
@@ -125,7 +135,34 @@ pub fn get_all_commands() -> Vec<Command> {
         "Force the load, even if the folder already exists.".to_string(),
     ));
 
+    load_com.add_flag(Flag::new_bool_flag(
+        vec!["template".to_string(), "t".to_string()],
+        "Load only one template.".to_string(),
+    ));
+
     commands.push(load_com);
+
+    // *** reload ***
+
+    let mut reload_com = Command::new(
+        vec!["reload".to_string(), "rl".to_string()],
+        commands::reload,
+        "Reload templates from a github repository.".to_string(),
+    );
+
+    reload_com.add_argument(Argument::new(
+        "template-name".to_string(),
+        0,
+        false,
+        "The name of the template to reload (reload all if not provided).".to_string(),
+    ));
+
+    reload_com.add_flag(Flag::new_bool_flag(
+        vec!["strict".to_string()],
+        "If enabled the template name must match exactly.".to_string(),
+    ));
+
+    commands.push(reload_com);
 
     // *** generate ***
 
