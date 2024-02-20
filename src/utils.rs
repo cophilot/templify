@@ -1,7 +1,6 @@
-use chrono::{self, Datelike};
 use std::{io::Write, path::Path};
 
-use crate::types::Status;
+use crate::{formater, types::Status};
 
 pub fn parse_template_name(name: &mut String, strict: bool) -> Status {
     let template_name_raw = name.clone().to_string();
@@ -264,13 +263,7 @@ pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str, dry_r
             continue;
         }
 
-        let mut new_file_name = file_name.replace("$$name$$", given_name);
-        new_file_name =
-            new_file_name.replace("$$year$$", chrono::Local::now().year().to_string().as_str());
-        new_file_name =
-            new_file_name.replace("$$month$$", &chrono::Local::now().month().to_string());
-        new_file_name = new_file_name.replace("$$day$$", &chrono::Local::now().day().to_string());
-        new_file_name = new_file_name.replace("$$git-name$$", &crate::utils::get_git_name());
+        let new_file_name = formater::handle_placeholders(file_name, given_name);
         let new_path = format!("{}/{}", new_path, new_file_name);
 
         // check if new_path already exists
@@ -295,12 +288,7 @@ pub fn generate_template_dir(path: &str, new_path: &str, given_name: &str, dry_r
 
 pub fn generate_template_file(path: &str, new_path: &str, given_name: &str, dry_run: bool) -> bool {
     let file_content = std::fs::read_to_string(path).unwrap();
-    let mut file_content = file_content.replace("$$name$$", given_name);
-    file_content =
-        file_content.replace("$$year$$", chrono::Local::now().year().to_string().as_str());
-    file_content = file_content.replace("$$month$$", &chrono::Local::now().month().to_string());
-    file_content = file_content.replace("$$day$$", &chrono::Local::now().day().to_string());
-    file_content = file_content.replace("$$git-name$$", &crate::utils::get_git_name());
+    let file_content = formater::handle_placeholders(&file_content, given_name);
 
     if Path::new(new_path).exists() {
         println!("File {} already exists.", new_path);

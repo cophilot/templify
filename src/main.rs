@@ -3,6 +3,7 @@ mod commands;
 mod data;
 mod env;
 mod executer;
+mod formater;
 mod types;
 mod utils;
 mod version_control;

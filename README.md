@@ -47,6 +47,7 @@ For a more detailed documentation visit the [templify-docs](https://templify.phi
     -   [list](#list)
     -   [generate](#generate)
 -   [Placeholders](#placeholders)
+    -   [Case conversion](#case-conversion)
 -   [templify-vault](#templify-vault)
 -   [Bugs](#bugs)
 -   [Release Notes](#release-notes)
@@ -185,9 +186,29 @@ Generates a file from the given template.
 
 ## Placeholders
 
-Placeholders are used to replace parts of the template with the given values. They are defined by surrounding a word with two dollar signs (`$$`):
+-   `$$name$$`: The name of the new file (This placeholder supports case conversion).
+-   `$$year$$`: The current year.
+-   `$$month$$`: The current month as a number.
+-   `$$month-name$$`: The current month as a name.
+-   `$$day$$`: The current day.
+-   `$$git-name$$`: The name of the git user.
 
--   `$$name$$` will be replaced with the given name
+### Case conversion
+
+Case conversion is used to convert placeholders to different case styles. You can use them by adding a `.` and the case style to a placeholder that supports case conversion.
+
+_Example: `$$name.kebab$$`_
+
+You can use the following case conversion:
+
+-   `$$<placeholder>.lower$$`: Lower case (e.g. `mycomponent`)
+-   `$$<placeholder>.upper$$`: Upper case (e.g. `MYCOMPONENT`)
+-   `$$<placeholder>.camel$$`: Camel case (e.g. `myComponent`)
+-   `$$<placeholder>.snake$$`: Snake case (e.g. `my_component`)
+-   `$$<placeholder>.kebab$$`: Kebab case (e.g. `my-component`)
+-   `$$<placeholder>.pascal$$`: Pascal case (e.g. `MyComponent`)
+-   `$$<placeholder>.macro$$`: Macro case (e.g. `MY_COMPONENT`)
+-   `$$<placeholder>.train$$`: Train case (e.g. `My-Component`)
 
 ---
 
@@ -213,14 +234,11 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.5.0](https://github.com/cophilot/templify/tree/0.5.0)
+### [v0.6.0](https://github.com/cophilot/templify/tree/0.6.0)
 
 -   Refactoring
--   Added `reload` command
--   Added `-name` flag for the `list` command
--   Added `-path` flag for the `list` command
--   Added `-template` flag for the `load` command
--   Support for `.tpykeep` file to prevent a directory from being deleted
+-   Added placeholder `$$month-name$$`
+-   Added case conversion support for the `name` placeholder
 
 ---
 

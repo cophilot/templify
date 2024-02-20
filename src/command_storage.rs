@@ -196,6 +196,12 @@ pub fn get_all_commands() -> Vec<Command> {
         "If enabled the file will not be created and the output will be printed.".to_string(),
     ));
 
+    /*     generate_com.add_flag(Flag::new_bool_flag(
+           vec!["force".to_string(), "f".to_string()],
+           "If enabled files will be overwritten if they already exist.".to_string(),
+       ));
+    */
+
     commands.push(generate_com);
 
     return commands;

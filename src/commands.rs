@@ -1,8 +1,8 @@
 use crate::{
+    formater,
     types::{self, Command, Status},
     utils, version_control,
 };
-use chrono::{self, Datelike};
 use std::fs::read_dir;
 
 pub fn list(command: &Command) -> Status {
@@ -179,12 +179,7 @@ pub fn generate(command: &Command) -> Status {
     );
     let meta = types::TemplateMeta::parse(template_name.clone().to_string());
     let mut new_path = meta.get_path();
-
-    new_path = new_path.replace("$$name$$", given_name.as_str());
-    new_path = new_path.replace("$$year$$", chrono::Local::now().year().to_string().as_str());
-    new_path = new_path.replace("$$month$$", &chrono::Local::now().month().to_string());
-    new_path = new_path.replace("$$day$$", &chrono::Local::now().day().to_string());
-    new_path = new_path.replace("$$git-name$$", &utils::get_git_name());
+    new_path = formater::handle_placeholders(&new_path, &given_name);
 
     // create dir and all subdirs if they don't exist
     if !dry_run {

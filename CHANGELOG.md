@@ -2,6 +2,14 @@
 
 ---
 
+## [v0.6.0](https://github.com/cophilot/templify/tree/0.6.0) (2024-2-20)
+
+-   Refactoring
+-   Added placeholder `$$month-name$$`
+-   Added case conversion support for the `name` placeholder
+
+---
+
 ## [v0.5.0](https://github.com/cophilot/templify/tree/0.5.0) (2024-2-17)
 
 -   Refactoring
