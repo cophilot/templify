@@ -64,7 +64,11 @@ else
   echo "Looking for the release with the tag $version..."
   #check if the tag exists
   json=$(curl -s https://api.github.com/repos/cophilot/templify/releases/tags/$version)
-  msg=$(echo $json | grep -Po '"message": "\K.*?(?=")')
+  if [ "$macOS" = true ]; then
+    msg=$(echo $json | grep -o '"message": ".*"' | cut -d '"' -f4)
+  else
+    msg=$(echo $json | grep -Po '"message": "\K.*?(?=")')
+  fi
   if [ "$msg" = "Not Found" ]; then
     echo "Error: No release found with the tag $version"
     exit 1
