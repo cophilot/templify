@@ -7,14 +7,16 @@
 yesFlag=false
 version="latest"
 homePath=$HOME/.templify
+macOS=false
 
 # parse the flags 
-while getopts v:p:y flag
+while getopts v:p:y:m flag
 do
     case "${flag}" in
         v) version=${OPTARG};;
         p) homePath=${OPTARG};; 
         y) yesFlag=true;;
+        m) macOS=true;;
     esac
 done
 
@@ -58,6 +60,10 @@ else
 fi
 
 url=https://github.com/cophilot/templify/releases/download/$version/tpy
+
+if [ "$macOS" = true ]; then
+  url=$url_macos
+fi
 
 echo "Creating installation directory $homePath..."
 mkdir -p $homePath/bin
