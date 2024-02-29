@@ -10,15 +10,18 @@ homePath=$HOME/.templify
 macOS=false
 
 # parse the flags 
-while getopts v:p:y:m flag
+while getopts v:p:y flag
 do
     case "${flag}" in
         v) version=${OPTARG};;
         p) homePath=${OPTARG};; 
         y) yesFlag=true;;
-        m) macOS=true;;
     esac
 done
+
+if [ "$(uname)" == "Darwin" ]; then
+  macOS=true
+fi
 
 if [[ $version == v* ]]; then
   version=${version:1}
@@ -30,7 +33,6 @@ else
   echo "Installing templify for Linux..."
 fi
 
-echo "Installing templify..."
 echo "This will install a binary to $homePath and add it to your PATH."
 if [ "$yesFlag" = false ]; then
   read -p "Are you sure you want to continue? (y/N) " response < /dev/tty
