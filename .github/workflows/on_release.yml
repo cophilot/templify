@@ -66,7 +66,7 @@ jobs:
               run: cargo build --release
 
             - name: Rename binary
-              run: mv target/release/templify tpy
+              run: mv target/release/templify tpy-macos
 
             - name: upload linux artifact
               uses: actions/upload-artifact@v1
