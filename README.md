@@ -234,11 +234,9 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.6.0](https://github.com/cophilot/templify/tree/0.6.0)
+### [v0.7.0](https://github.com/cophilot/templify/tree/0.7.0)
 
--   Refactoring
--   Added placeholder `$$month-name$$`
--   Added case conversion support for the `name` placeholder
+-   macOS support added
 
 ---
 

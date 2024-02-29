@@ -2,6 +2,12 @@
 
 ---
 
+## [v0.7.0](https://github.com/cophilot/templify/tree/0.7.0) (2024-2-29)
+
+-   macOS support added
+
+---
+
 ## [v0.6.0](https://github.com/cophilot/templify/tree/0.6.0) (2024-2-20)
 
 -   Refactoring
