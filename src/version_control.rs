@@ -6,7 +6,7 @@ pub fn update(v: String) -> Result<(), Box<dyn std::error::Error>> {
         binary_ending = ".exe";
     }
     if env::is_mac() {
-        binary_ending = "_macos";
+        binary_ending = "-macos";
     }
 
     let mut version = v;

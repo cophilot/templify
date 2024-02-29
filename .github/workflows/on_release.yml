@@ -34,7 +34,7 @@ jobs:
                   artifacts: |
                       uploads/tpy.exe
                       uploads/tpy
-                      uploads/tpy_macos
+                      uploads/tpy-macos
                   token: ${{ secrets.GITHUB_TOKEN }}
                   body: ${{ steps.changelog_reader.outputs.changes }}
 
@@ -72,7 +72,7 @@ jobs:
               uses: actions/upload-artifact@v1
               with:
                   name: uploads
-                  path: tpy_macos
+                  path: tpy-macos
 
     build-windows:
         runs-on: windows-latest

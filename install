@@ -46,7 +46,11 @@ if [ "$version" = "latest" ]; then
   json=$(curl -s https://api.github.com/repos/cophilot/templify/releases/latest)
 
   # get the tag name of the latest release
-  version=$(echo $json | grep -Po '"tag_name": "\K.*?(?=")')
+  if [ "$macOS" = true ]; then
+    version=$(echo $json | grep -o '"tag_name": ".*"' | cut -d '"' -f4)
+  else
+    version=$(echo $json | grep -Po '"tag_name": "\K.*?(?=")')
+  fi
   echo "Found version: $version"
 else
   echo "Looking for the release with the tag $version..."
@@ -62,8 +66,11 @@ fi
 url=https://github.com/cophilot/templify/releases/download/$version/tpy
 
 if [ "$macOS" = true ]; then
-  url=$url_macos
+  url="$url-macos"
+echo "url: $url"
 fi
+
+exit 0
 
 echo "Creating installation directory $homePath..."
 mkdir -p $homePath/bin
