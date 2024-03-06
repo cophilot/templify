@@ -1,0 +1,34 @@
+name: Run rust quality checks
+
+on:
+    push:
+        branches:
+            - master
+
+env:
+    CARGO_TERM_COLOR: always
+
+jobs:
+    rust-quality-check:
+        runs-on: ubuntu-latest
+
+        steps:
+            - uses: actions/checkout@v2
+
+            - name: Check formating
+              run: ./scripts/format:check
+
+            - name: Run linter
+              run: ./scripts/lint
+
+            - name: Run tests
+              run: ./scripts/test
+
+            - name: Merge to stable branch
+              uses: peter-evans/create-pull-request@v3
+              with:
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  branch: stable
+                  base: master
+                  title: Automated New Stable Version
+                  body: This pull request was automatically created by the workflow and contains the latest stable version of the repository.
