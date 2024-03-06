@@ -15,6 +15,9 @@ jobs:
         steps:
             - uses: actions/checkout@v2
 
+            - name: Check for missing comments
+              run: ./scripts/comment:check
+
             - name: Check formating
               run: ./scripts/format:check
 

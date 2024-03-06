@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python scripts/py/check_comment.py
