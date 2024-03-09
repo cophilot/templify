@@ -5,7 +5,10 @@ on:
         branches:
             - dev
     workflow_call:
-        
+        inputs:
+            branch:
+                required: true
+                type: string
 
 env:
     CARGO_TERM_COLOR: always
@@ -16,6 +19,11 @@ jobs:
 
         steps:
             - uses: actions/checkout@v2
+              with:
+                  ref: ${{ github.event.inputs.branch || 'dev' }}
+
+            - name: Print branch
+              run: git branch
 
             - name: Check formatting
               run: ./scripts/format:check
