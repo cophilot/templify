@@ -3,7 +3,9 @@ name: Run rust quality checks
 on:
     push:
         branches:
-            - master
+            - dev
+    workflow_call:
+        
 
 env:
     CARGO_TERM_COLOR: always
@@ -15,11 +17,11 @@ jobs:
         steps:
             - uses: actions/checkout@v2
 
+            - name: Check formatting
+              run: ./scripts/format:check
+
             - name: Check for missing comments
               run: ./scripts/comment:check
-
-            - name: Check formating
-              run: ./scripts/format:check
 
             - name: Run linter
               run: ./scripts/lint
@@ -31,7 +33,7 @@ jobs:
               uses: peter-evans/create-pull-request@v3
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  branch: stable
-                  base: master
+                  branch: master
+                  base: dev
                   title: Automated New Stable Version
                   body: This pull request was automatically created by the workflow and contains the latest stable version of the repository.
