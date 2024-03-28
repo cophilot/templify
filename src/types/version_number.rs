@@ -15,6 +15,13 @@ impl VersionNumber {
         }
     }
 
+    /// Create a new version number from a string
+    pub fn from_string(version: &str) -> VersionNumber {
+        let mut version_number = VersionNumber::new();
+        version_number.parse_from_string(version);
+        version_number
+    }
+
     /// Parse a version number from a string and return if it was successful
     pub fn parse_from_string(&mut self, version: &str) -> bool {
         let parts: Vec<&str> = version.split('.').collect();
@@ -41,6 +48,20 @@ impl VersionNumber {
             return true;
         }
         if self.major == other.major && self.minor == other.minor && self.patch > other.patch {
+            return true;
+        }
+        false
+    }
+
+    /// Check if this version number is older than the other
+    pub fn is_older(&self, other: &VersionNumber) -> bool {
+        if self.major < other.major {
+            return true;
+        }
+        if self.major == other.major && self.minor < other.minor {
+            return true;
+        }
+        if self.major == other.major && self.minor == other.minor && self.patch < other.patch {
             return true;
         }
         false

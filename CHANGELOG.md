@@ -2,7 +2,7 @@
 
 ---
 
-## [v1.0.0](https://github.com/cophilot/templify/tree/1.0.0) (2024-3-?)
+## [v1.0.0](https://github.com/cophilot/templify/tree/1.0.0) (2024-3-28)
 
 -   Refactoring
 -   Added variable placeholders

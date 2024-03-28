@@ -37,7 +37,7 @@ jobs:
             - name: Run tests
               run: ./scripts/test
 
-            - name: Merge to stable branch
+            - name: Merge to master branch
               uses: peter-evans/create-pull-request@v3
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}

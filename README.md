@@ -246,9 +246,23 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v0.7.0](https://github.com/cophilot/templify/tree/0.7.0)
+### [v1.0.0](https://github.com/cophilot/templify/tree/1.0.0)
 
--   macOS support added
+-   Refactoring
+-   Added variable placeholders
+-   Added `-reset` flag for the `reload` command
+-   Added `-force` flag for the `generate` command
+-   Added `-reload` flag for the `generate` command
+-   Added `-var` flag for the `generate` command
+-   Added `-default-var` flag for the `generate` command
+-   Short forms for case conversion
+-   Added divider selection support in the `.templify` file
+-   Added global flag support
+-   Added `--quiet` global flag
+-   Added `--dev` global flag
+-   Added `--log-file` global flag
+-   Initialize test suite
+-   CI pipeline for code quality checks
 
 ---
 

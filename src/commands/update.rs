@@ -36,9 +36,14 @@ pub(crate) fn update(command: &Command) -> Status {
     }
 
     if !version.is_empty() {
-        if !VersionNumber::new().parse_from_string(&version) {
+        let mut version_number = VersionNumber::new();
+        if !version_number.parse_from_string(&version) {
             return Status::error(format!("Invalid version number: {}", version));
         }
+        if version_number.is_older(&VersionNumber::from_string("1.0.0")) {
+            return Status::error("Versions older than 1.0.0 are not supported.".to_string());
+        }
+
         log!("Updating templify to version {}...", version);
     } else {
         log!("Updating templify...");
