@@ -2,6 +2,26 @@
 
 ---
 
+## [v1.0.0](https://github.com/cophilot/templify/tree/1.0.0) (2024-3-?)
+
+-   Refactoring
+-   Added variable placeholders
+-   Added `-reset` flag for the `reload` command
+-   Added `-force` flag for the `generate` command
+-   Added `-reload` flag for the `generate` command
+-   Added `-var` flag for the `generate` command
+-   Added `-default-var` flag for the `generate` command
+-   Short forms for case conversion
+-   Added divider selection support in the `.templify` file
+-   Added global flag support
+-   Added `--quiet` global flag
+-   Added `--dev` global flag
+-   Added `--log-file` global flag
+-   Initialize test suite
+-   CI pipeline for code quality checks
+
+---
+
 ## [v0.7.0](https://github.com/cophilot/templify/tree/0.7.0) (2024-2-29)
 
 -   macOS support added

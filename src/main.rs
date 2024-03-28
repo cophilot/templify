@@ -1,41 +1,46 @@
-mod command_storage;
-mod commands;
-mod data;
-mod env;
-mod executer;
-mod formater;
-mod types;
-mod utils;
-mod version_control;
+use templify::env;
+use templify::executer;
+use templify::log;
+use templify::logger;
+use templify::utils;
 
+/// The main function of the templify application.
 fn main() {
     // ****************************
     // *** Welcome to templify! ***
     // ****************************
 
-    let args: Vec<String> = std::env::args().collect();
+    logger::use_stdout();
+
+    let mut args: Vec<String> = std::env::args().collect();
 
     unsafe { env::BASE_COMMAND_NAME = args[0].clone() };
 
-    utils::handle_dev_mode(&args);
+    exit_when_error(executer::process_global_flags(&mut args));
 
     if args.len() < 2 {
-        println!("Welcome to templify!");
-        println!("");
+        log!("Welcome to templify!");
+        log!(" ");
         let command_name = unsafe { crate::env::BASE_COMMAND_NAME.clone() };
 
-        println!("Usage: {} <command>", command_name);
-        println!("Run `{} help` for more information.", command_name);
-        println!("");
-        println!("by Philipp B.");
-        println!("Have a nice day :)");
-        version_control::print_update_message();
+        log!("Usage: {} <command>", command_name);
+        log!("Run `{} help` for more information.", command_name);
+        log!(" ");
+        log!("by Philipp B.");
+        log!("Have a nice day :)");
+        utils::version_control::print_update_message();
         return;
     }
 
-    if !executer::execute(args) {
-        std::process::exit(1);
-    }
+    exit_when_error(executer::execute(args));
 
-    version_control::print_update_message();
+    utils::version_control::print_update_message();
+}
+
+/// Exit the application when an error occurred.
+fn exit_when_error(is_success: bool) {
+    if is_success {
+        return;
+    }
+    std::process::exit(1);
 }

@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Install rust
+if ! command -v rustup &> /dev/null
+then
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+
+    # Install cargo
+    source $HOME/.cargo/env
+fi
+
+# Install rustfmt
+rustup component add rustfmt
+
+# Install clippy
+rustup component add clippy
+
+# Set git hooks
+git config --local core.hooksPath .githooks/
+
+git pull
+git checkout dev
+git pull
+
+# run to install dependencies
+cargo run

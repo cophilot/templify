@@ -12,6 +12,9 @@
    <a href="https://github.com/cophilot/templify/releases">
        <img src="https://img.shields.io/github/v/release/cophilot/templify?display_name=tag" alt="current realease" />
    </a>
+   <a href="https://github.com/cophilot/templify/actions/workflows/check_rust_quality.yml">
+       <img src="https://img.shields.io/github/actions/workflow/status/cophilot/templify/check_rust_quality.yml?style=flat&logo=Rust&label=CI" alt="CI-Pipeline" />
+   </a>
    <a href="https://github.com/cophilot/templify/blob/main/LICENSE">
        <img src="https://img.shields.io/github/license/cophilot/templify" alt="license" />
    </a>
@@ -36,6 +39,7 @@ For a more detailed documentation visit the [templify-docs](https://templify.phi
 -   [Installation](#installation)
     -   [Linux](#linux)
     -   [Windows](#windows)
+-   [Development Installation](#development-installation)
 -   [Templates](#templates)
 -   [.templify](#templify)
 -   [Usage](#usage)
@@ -99,6 +103,14 @@ You may need to restart your terminal after installation for the changes to take
 5. Add the `bin` folder to your system's [PATH variable](https://medium.com/@kevinmarkvi/how-to-add-executables-to-your-path-in-windows-5ffa4ce61a53)
 
 > After installation run `tpy version` to verify that the installation was successful.
+
+---
+
+## Development Installation
+
+1. Clone the repository
+2. Run `./scripts/setup`
+3. Now you can run `cargo run <command> --dev` to run the CLI tool
 
 ---
 

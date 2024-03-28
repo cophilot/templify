@@ -1,8 +1,10 @@
 #!/bin/bash
 
-##########################
-### templify installer ###
-##########################
+echo ""
+echo "  **************************"
+echo "  *** templify installer ***"
+echo "  **************************"
+echo ""
 
 yesFlag=false
 version="latest"
@@ -126,5 +128,5 @@ fi
 
 echo "templify successfully installed to $homePath/bin"
 echo "You may need to restart your shell for the changes to take effect"
-echo "Run 'tpy help' to get started"
+echo "Run 'tpy help' to get started or visit https://templify.philipp-bonin.com for more information"
 

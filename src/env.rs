@@ -2,10 +2,12 @@ use std::env;
 
 pub static mut BASE_COMMAND_NAME: String = String::new();
 
+/// Returns if the current OS is Windows
 pub fn is_windows() -> bool {
-    return env::consts::OS == "windows";
+    env::consts::OS == "windows"
 }
 
+/// Returns if the current OS is macOS
 pub fn is_mac() -> bool {
-    return env::consts::OS == "macos";
+    env::consts::OS == "macos"
 }

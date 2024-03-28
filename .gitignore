@@ -1,8 +1,6 @@
 /target
-.vscode/*
+/.vscode
 ideas.md
-.templify
-.templates
 templify-example
-install2
 dev/
+tpy-test-dir
