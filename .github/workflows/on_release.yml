@@ -39,7 +39,7 @@ jobs:
               with:
                   artifacts: |
                       uploads/tpy.exe
-                      uploads/tpy
+                      uploads/tpy-linux
                       uploads/tpy-macos
                   token: ${{ secrets.GITHUB_TOKEN }}
                   body: ${{ steps.changelog_reader.outputs.changes }}
@@ -56,13 +56,13 @@ jobs:
               run: cargo build --release
 
             - name: Rename binary
-              run: mv target/release/templify tpy
+              run: mv target/release/templify tpy-linux
 
             - name: upload linux artifact
               uses: actions/upload-artifact@v1
               with:
                   name: uploads
-                  path: tpy
+                  path: tpy-linux
 
     macos-linux:
         runs-on: macos-latest

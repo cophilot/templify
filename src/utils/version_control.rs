@@ -4,11 +4,10 @@ use crate::{env, utils};
 
 /// This function is used to update templify to a version or to the latest version if an empty string is passed.
 pub fn update(v: String) -> Result<(), Box<dyn std::error::Error>> {
-    let mut binary_ending = "";
+    let mut binary_ending = "-linux";
     if env::is_windows() {
         binary_ending = ".exe";
-    }
-    if env::is_mac() {
+    } else if env::is_mac() {
         binary_ending = "-macos";
     }
 

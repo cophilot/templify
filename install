@@ -27,6 +27,10 @@ fi
 
 if [[ $version == v* ]]; then
   version=${version:1}
+  if [[ $version == 0.* ]]; then
+    echo "Error: Version $version is not supported"
+    exit 1
+  fi
 fi
 
 if [ "$macOS" = true ]; then
@@ -81,6 +85,8 @@ url=https://github.com/cophilot/templify/releases/download/$version/tpy
 
 if [ "$macOS" = true ]; then
   url="$url-macos"
+else
+  url="$url-linux"
 fi
 
 echo "Creating installation directory $homePath..."
