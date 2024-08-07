@@ -9,11 +9,6 @@ echo "Running prepare-commit-msg hook"
 # get the current branch name
 BRANCH_NAME=$(git branch --show-current)
 
-# return if not in dev branch
-if [ "$BRANCH_NAME" != "dev" ]; then
-    exit 0
-fi
-
 # read the content of the README.md file
 PHIL_PROJECT_FILE=$(cat .phil-project)
 
@@ -25,12 +20,11 @@ issue_id=$(echo $BRANCH_NAME | cut -d'-' -f1)
 
 if [ ! -z "$issue_id" ]; then
     echo "Found Issue ID: $issue_id"
-    issue_id="[$issue_id] "
+    issue_id="[#$issue_id] "
 else
     issue_id=""
 fi
 
 echo "$issue_idv$VERSION - $(cat $COMMIT_MSG_FILE)" > $COMMIT_MSG_FILE
 
-echo $(cat $COMMIT_MSG_FILE)
 echo "prepare-commit-msg hook finished"
