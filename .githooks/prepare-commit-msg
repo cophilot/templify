@@ -20,11 +20,13 @@ issue_id=$(echo $BRANCH_NAME | cut -d'-' -f1)
 
 if [ ! -z "$issue_id" ]; then
     echo "Found Issue ID: $issue_id"
-    issue_id="[#$issue_id] "
+    issue_id="[#$issue_id] $VERSION -"
 else
-    issue_id=""
+    issue_id="$VERSION -"
 fi
 
-echo "$issue_idv$VERSION - $(cat $COMMIT_MSG_FILE)" > $COMMIT_MSG_FILE
+echo "$issue_id $(cat $COMMIT_MSG_FILE)" > $COMMIT_MSG_FILE
+
+echo "Updated commit message: $(cat $COMMIT_MSG_FILE)"
 
 echo "prepare-commit-msg hook finished"
