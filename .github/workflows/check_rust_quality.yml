@@ -34,7 +34,7 @@ jobs:
               run: ./scripts/test
 
             - name: Merge to master branch
-              if: ${{ inputs.branch == 'dev' }}
+              if: github.ref == 'refs/heads/dev'
               uses: peter-evans/create-pull-request@v3
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}
