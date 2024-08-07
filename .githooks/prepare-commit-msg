@@ -18,14 +18,14 @@ VERSION=$(echo $PHIL_PROJECT_FILE | grep -oP 'version:\K[0-9]+\.[0-9]+\.[0-9]+')
 # get the branch name and split it by '-' and get the first element
 issue_id=$(echo $BRANCH_NAME | cut -d'-' -f1)
 
-if [ ! -z "$issue_id" ]; then
+if [[ $issue_id =~ ^[0-9]+$ ]]; then
     echo "Found Issue ID: $issue_id"
-    issue_id="[#$issue_id] $VERSION -"
+    issue_id="- [#$issue_id] $VERSION"
 else
-    issue_id="$VERSION -"
+    issue_id="- $VERSION"
 fi
 
-echo "$issue_id $(cat $COMMIT_MSG_FILE)" > $COMMIT_MSG_FILE
+echo "$(cat $COMMIT_MSG_FILE) $issue_id" > $COMMIT_MSG_FILE
 
 echo "Updated commit message: $(cat $COMMIT_MSG_FILE)"
 
