@@ -2,8 +2,7 @@ name: Run rust quality checks
 
 on:
     push:
-        branches:
-            - dev
+        branches: ['*']
     workflow_call:
         inputs:
             branch:
@@ -35,7 +34,7 @@ jobs:
               run: ./scripts/test
 
             - name: Merge to master branch
-              if: ${{ inputs.branch != 'master' }}
+              if: ${{ inputs.branch == 'dev' }}
               uses: peter-evans/create-pull-request@v3
               with:
                   token: ${{ secrets.GITHUB_TOKEN }}

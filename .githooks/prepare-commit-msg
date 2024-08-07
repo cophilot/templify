@@ -9,19 +9,24 @@ echo "Running prepare-commit-msg hook"
 # get the current branch name
 BRANCH_NAME=$(git branch --show-current)
 
-# return if not in dev branch
-if [ "$BRANCH_NAME" != "dev" ]; then
-    exit 0
-fi
-
 # read the content of the README.md file
 PHIL_PROJECT_FILE=$(cat .phil-project)
 
 # get the version of the project
 VERSION=$(echo $PHIL_PROJECT_FILE | grep -oP 'version:\K[0-9]+\.[0-9]+\.[0-9]+')
 
-echo "v$VERSION - $(cat $COMMIT_MSG_FILE)" > $COMMIT_MSG_FILE
+# get the branch name and split it by '-' and get the first element
+issue_id=$(echo $BRANCH_NAME | cut -d'-' -f1)
 
-echo "$(cat $COMMIT_MSG_FILE)"
+if [ ! -z "$issue_id" ]; then
+    echo "Found Issue ID: $issue_id"
+    issue_id="[#$issue_id] $VERSION -"
+else
+    issue_id="$VERSION -"
+fi
+
+echo "$issue_id $(cat $COMMIT_MSG_FILE)" > $COMMIT_MSG_FILE
+
+echo "Updated commit message: $(cat $COMMIT_MSG_FILE)"
 
 echo "prepare-commit-msg hook finished"
