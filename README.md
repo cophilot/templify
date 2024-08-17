@@ -39,6 +39,7 @@ For a more detailed documentation visit the [templify-docs](https://templify.phi
 -   [Installation](#installation)
     -   [Linux](#linux)
     -   [Windows](#windows)
+-   [Docker](#docker)
 -   [Development Installation](#development-installation)
 -   [Templates](#templates)
 -   [.templify](#templify)
@@ -103,6 +104,19 @@ You may need to restart your terminal after installation for the changes to take
 5. Add the `bin` folder to your system's [PATH variable](https://medium.com/@kevinmarkvi/how-to-add-executables-to-your-path-in-windows-5ffa4ce61a53)
 
 > After installation run `tpy version` to verify that the installation was successful.
+
+---
+
+## Docker
+
+You can run an docker container with an installed templify version to try out the features. Just run the following commands:
+
+```
+git clone https://github.com/cophilot/templify.git
+cd templify
+docker build . --tag templify-image
+docker run -it templify-image bash
+```
 
 ---
 
