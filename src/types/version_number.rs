@@ -72,6 +72,6 @@ impl VersionNumber {
         if self.major != other.major {
             return true;
         }
-        return false;
+        false
     }
 }
