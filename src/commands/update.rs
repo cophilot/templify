@@ -28,8 +28,6 @@ pub(crate) fn update(command: &Command) -> Status {
     if !utils::functions::check_internet_connection() {
         return Status::error("You need a internet connection to update templify.".to_string());
     }
-    let mut current_version = VersionNumber::new();
-    current_version.parse_from_string(env!("CARGO_PKG_VERSION"));
 
     let version = command.get_value_flag("version").clone();
 
@@ -37,6 +35,9 @@ pub(crate) fn update(command: &Command) -> Status {
         log!("templify is already up to date.");
         return Status::ok();
     }
+
+    let mut current_version = VersionNumber::new();
+    current_version.parse_from_string(env!("CARGO_PKG_VERSION"));
 
     if !version.is_empty() {
         let mut version_number = VersionNumber::new();
