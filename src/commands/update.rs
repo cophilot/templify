@@ -4,6 +4,7 @@ use crate::types::flag::Flag;
 use crate::types::status::Status;
 use crate::types::version_number::VersionNumber;
 use crate::utils;
+use crate::utils::version_control::get_latest_version;
 
 /// The definition of the update command.
 pub(crate) fn definition() -> Command {
@@ -27,6 +28,8 @@ pub(crate) fn update(command: &Command) -> Status {
     if !utils::functions::check_internet_connection() {
         return Status::error("You need a internet connection to update templify.".to_string());
     }
+    let mut current_version = VersionNumber::new();
+    current_version.parse_from_string(env!("CARGO_PKG_VERSION"));
 
     let version = command.get_value_flag("version").clone();
 
@@ -44,8 +47,27 @@ pub(crate) fn update(command: &Command) -> Status {
             return Status::error("Versions older than 1.0.0 are not supported.".to_string());
         }
 
+        if current_version.is_major_update(&version_number) {
+            log!(" ");
+            log!("Warning, Updating Major Version can have breaking changes. Please consider reading documentation after update.");
+            log!(" ");
+            log!("To get more information please visit: https://github.com/cophilot/templify/blob/master/CHANGELOG.md");
+            log!(" ");
+        }
+
         log!("Updating templify to version {}...", version);
     } else {
+        let mut latest_verion = VersionNumber::new();
+        latest_verion.parse_from_string(&get_latest_version());
+
+        if current_version.is_major_update(&latest_verion) {
+            log!(" ");
+            log!("Warning, Latest Version has major release. Please consider reading documentation after update");
+            log!(" ");
+            log!("To get more information please visit: https://github.com/cophilot/templify/blob/master/CHANGELOG.md");
+            log!(" ");
+        }
+
         log!("Updating templify...");
     }
 

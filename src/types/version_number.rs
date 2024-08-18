@@ -66,4 +66,11 @@ impl VersionNumber {
         }
         false
     }
+
+    pub fn is_major_update(&self, other: &VersionNumber) -> bool {
+        if self.major != other.major {
+            return true;
+        }
+        return false;
+    }
 }
