@@ -69,9 +69,6 @@ impl VersionNumber {
 
     /// Check if this version number has major version difference than the other
     pub fn is_major_update(&self, other: &VersionNumber) -> bool {
-        if self.major != other.major {
-            return true;
-        }
-        false
+        self.major != other.major
     }
 }
