@@ -23,7 +23,7 @@ jobs:
                   ref: master
 
             - name: download artifacts
-              uses: actions/download-artifact@v1
+              uses: actions/download-artifact@v4.1.7
               with:
                   name: uploads
             - name: Get Changelog Entry
