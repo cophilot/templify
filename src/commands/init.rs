@@ -1,3 +1,4 @@
+use crate::commands::load::URLType;
 use crate::log;
 use crate::types::command::Command;
 use crate::types::flag::Flag;
@@ -52,6 +53,7 @@ pub(crate) fn init(command: &Command) -> Status {
             ".templates",
             "https://github.com/cophilot/templify-vault/tree/main/Example",
             true,
+            &URLType::GitHub,
         );
     }
     log!("templify initialized successfully.");

@@ -1,3 +1,4 @@
+use crate::commands::load::URLType;
 use crate::log;
 use crate::types::status::Status;
 use crate::types::template_meta::TemplateMeta;
@@ -80,10 +81,24 @@ pub(crate) fn reload_template(name: String, strict: bool, reset: bool) -> Status
         std::fs::rename(&dir, &backup_dir).unwrap();
     }
 
+    let url = meta.get_source();
+
+    let url_type = if url.starts_with("https://github.com") {
+        URLType::GitHub
+    } else if url.starts_with("https://gitlab.com") {
+        URLType::GitLab
+    } else {
+        return Status::error(format!(
+            "Invalid url: {}\nOnly templates from GitHub and Gitlab are supported at the moment.",
+            url
+        ));
+    };
+
     let st = load_remote_template(
         format!(".templates/{}", name).as_str(),
-        meta.get_source().as_str(),
+        url.as_str(),
         true,
+        &url_type,
     );
     if !st.is_ok {
         if reset {
@@ -101,7 +116,12 @@ pub(crate) fn reload_template(name: String, strict: bool, reset: bool) -> Status
 }
 
 /// Load a collection of templates from a remote repository
-pub(crate) fn load_remote_template_collection(path: &str, url: &str, force: bool) -> Status {
+pub(crate) fn load_remote_template_collection(
+    path: &str,
+    url: &str,
+    force: bool,
+    url_type: &URLType,
+) -> Status {
     let response = rest::json_call(url);
     if response.is_err() {
         return Status::error(format!(
@@ -129,6 +149,7 @@ pub(crate) fn load_remote_template_collection(path: &str, url: &str, force: bool
                     .replace('"', "")
                     .as_str(),
                 force,
+                &url_type,
             );
             if !st.is_ok {
                 return st;
@@ -138,8 +159,56 @@ pub(crate) fn load_remote_template_collection(path: &str, url: &str, force: bool
     Status::ok()
 }
 
+/// Load a template from a github repository
+pub(crate) fn load_github_template(
+    response: serde_json::Value,
+    path: &str,
+    url: &str,
+    force: bool,
+) -> Option<Status> {
+    let items = response["payload"]["tree"]["items"].as_array().unwrap();
+
+    for item in items {
+        if item["contentType"] == "directory" {
+            let st = load_remote_template_dir(
+                format!("{}/{}", path, item["name"])
+                    .replace('"', "")
+                    .as_str(),
+                format!("{}/{}", url, item["name"])
+                    .replace('"', "")
+                    .as_str(),
+                force,
+            );
+            if !st.is_ok {
+                return Some(st);
+            }
+            continue;
+        }
+
+        let st = load_remote_template_file(
+            format!("{}/{}", path, item["name"])
+                .replace('"', "")
+                .as_str(),
+            format!("{}/{}", url, item["name"])
+                .replace('"', "")
+                .as_str(),
+            force,
+        );
+        if !st.is_ok {
+            return Some(st);
+        }
+    }
+
+    return None;
+}
+
 /// Load a template from a remote repository
-pub(crate) fn load_remote_template(path: &str, url: &str, force: bool) -> Status {
+pub(crate) fn load_remote_template(
+    path: &str,
+    url: &str,
+    force: bool,
+    url_type: &URLType,
+) -> Status {
     if !force && Path::new(path).exists() {
         return Status::error(format!(
             "Template {} already exists...",
@@ -167,37 +236,13 @@ pub(crate) fn load_remote_template(path: &str, url: &str, force: bool) -> Status
     }
     let response: serde_json::Value = response.unwrap();
 
-    let items = response["payload"]["tree"]["items"].as_array().unwrap();
+    let status = match url_type {
+        URLType::GitHub => load_github_template(response, path, url, force),
+        URLType::GitLab => None,
+    };
 
-    for item in items {
-        if item["contentType"] == "directory" {
-            let st = load_remote_template_dir(
-                format!("{}/{}", path, item["name"])
-                    .replace('"', "")
-                    .as_str(),
-                format!("{}/{}", url, item["name"])
-                    .replace('"', "")
-                    .as_str(),
-                force,
-            );
-            if !st.is_ok {
-                return st;
-            }
-            continue;
-        }
-
-        let st = load_remote_template_file(
-            format!("{}/{}", path, item["name"])
-                .replace('"', "")
-                .as_str(),
-            format!("{}/{}", url, item["name"])
-                .replace('"', "")
-                .as_str(),
-            force,
-        );
-        if !st.is_ok {
-            return st;
-        }
+    if status.is_some() {
+        return status.unwrap();
     }
 
     let temp_file = format!("{}/.templify", path);

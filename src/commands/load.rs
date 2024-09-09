@@ -5,6 +5,11 @@ use crate::types::flag::Flag;
 use crate::types::status::Status;
 use crate::utils;
 
+pub(crate) enum URLType {
+    GitHub,
+    GitLab,
+}
+
 /// The definition of the load command.
 pub(crate) fn definition() -> Command {
     let mut load_command = Command::new(
@@ -46,12 +51,23 @@ pub(crate) fn load(command: &Command) -> Status {
     }
 
     let url = command.get_argument("url").value.clone();
-    if !url.starts_with("https://github.com") {
+    // if !url.starts_with("https://github.com") && !url.starts_with("https://gitlab.com") {
+    //     return Status::error(format!(
+    //         "Invalid url: {}\nOnly templates from GitHub and Gitlab are supported at the moment.",
+    //         url
+    //     ));
+    // }
+
+    let url_type = if url.starts_with("https://github.com") {
+        URLType::GitHub
+    } else if url.starts_with("https://gitlab.com") {
+        URLType::GitLab
+    } else {
         return Status::error(format!(
-            "Invalid url: {}\nOnly templates from GitHub are supported at the moment.",
+            "Invalid url: {}\nOnly templates from GitHub and Gitlab are supported at the moment.",
             url
         ));
-    }
+    };
 
     let load_template = command.get_bool_flag("template");
     if load_template {
@@ -61,6 +77,7 @@ pub(crate) fn load(command: &Command) -> Status {
             format!(".templates/{}", name).as_str(),
             url.as_str(),
             command.get_bool_flag("force"),
+            &url_type,
         );
         if !st.is_ok {
             return st;
@@ -71,6 +88,7 @@ pub(crate) fn load(command: &Command) -> Status {
             ".templates",
             url.as_str(),
             command.get_bool_flag("force"),
+            &url_type,
         );
         if !st.is_ok {
             return st;
