@@ -140,13 +140,32 @@ pub(crate) fn load_remote_template_collection(
     }
     let response: serde_json::Value = response.unwrap();
 
-    let status = match url_type {
-        URLType::GitHub => load_github_template(response, path, url, force),
-        URLType::GitLab => load_gitlab_template(response, path, url, force),
+    let items = match url_type {
+        URLType::GitHub => response["payload"]["tree"]["items"].as_array().unwrap(),
+        URLType::GitLab => response.as_array().unwrap(),
     };
 
-    if !status.is_ok {
-        return status;
+    for item in items {
+        let check_collection = match url_type {
+            URLType::GitHub => item["contentType"] == "directory",
+            URLType::GitLab => item["type"] == "tree",
+        };
+
+        if check_collection {
+            let st = load_remote_template(
+                format!("{}/{}", path, item["name"])
+                    .replace('"', "")
+                    .as_str(),
+                format!("{}/{}", url, item["name"])
+                    .replace('"', "")
+                    .as_str(),
+                force,
+                &url_type,
+            );
+            if !st.is_ok {
+                return st;
+            }
+        }
     }
 
     Status::ok()
