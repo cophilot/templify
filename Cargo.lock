@@ -913,6 +913,7 @@ dependencies = [
 name = "templify"
 version = "1.0.0"
 dependencies = [
+ "base64",
  "chrono",
  "reqwest",
  "self-replace",
