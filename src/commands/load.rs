@@ -5,6 +5,7 @@ use crate::types::flag::Flag;
 use crate::types::status::Status;
 use crate::utils;
 
+/// This enum is used to define type of URL (.i.e.. GitHub, GitLab)
 pub(crate) enum URLType {
     GitHub,
     GitLab,
@@ -51,12 +52,6 @@ pub(crate) fn load(command: &Command) -> Status {
     }
 
     let url = command.get_argument("url").value.clone();
-    // if !url.starts_with("https://github.com") && !url.starts_with("https://gitlab.com") {
-    //     return Status::error(format!(
-    //         "Invalid url: {}\nOnly templates from GitHub and Gitlab are supported at the moment.",
-    //         url
-    //     ));
-    // }
 
     let url_type = if url.starts_with("https://github.com") {
         URLType::GitHub

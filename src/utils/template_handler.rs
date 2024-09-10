@@ -1,10 +1,9 @@
-use base64::{engine::general_purpose::STANDARD, Engine as _};
-
 use crate::commands::load::URLType;
 use crate::log;
 use crate::types::status::Status;
 use crate::types::template_meta::TemplateMeta;
 use crate::utils::formater;
+use base64::{engine::general_purpose::STANDARD, Engine as _};
 use std::io::Write;
 use std::path::Path;
 
@@ -541,18 +540,15 @@ fn load_remote_gitlab_template_file(path: &str, url: &str, force: bool) -> Statu
     }
 
     let mut text = match STANDARD.decode(content.unwrap()) {
-        Ok(decoded) => {
-            // Convert the decoded bytes to a string
-            match String::from_utf8(decoded) {
-                Ok(message) => message,
-                Err(_e) => {
-                    return Status::error(format!(
-                        "Failed to get template from {}: Decoding Error",
-                        url
-                    ))
-                }
+        Ok(decoded) => match String::from_utf8(decoded) {
+            Ok(message) => message,
+            Err(_e) => {
+                return Status::error(format!(
+                    "Failed to get template from {}: Decoding Error",
+                    url
+                ))
             }
-        }
+        },
         Err(_e) => {
             return Status::error(format!(
                 "Failed to get template from {}: Decoding Error",
