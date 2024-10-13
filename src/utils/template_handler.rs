@@ -423,7 +423,7 @@ fn load_remote_gitlab_template_dir(path: &str, url: &str, force: bool) -> Status
     let items = response.as_array().unwrap();
 
     for item in items {
-        if item["contentType"] == "tree" {
+        if item["type"] == "tree" {
             let st = load_remote_gitlab_template_dir(
                 format!("{}/{}", path, item["name"])
                     .replace('"', "")

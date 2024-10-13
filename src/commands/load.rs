@@ -23,7 +23,7 @@ pub(crate) fn definition() -> Command {
         "url".to_string(),
         0,
         true,
-        "The url of the github repository.".to_string(),
+        "The url of the github or gitlab repository.".to_string(),
     ));
 
     load_command.add_flag(Flag::new_bool_flag(
