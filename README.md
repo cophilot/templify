@@ -37,10 +37,12 @@ For a more detailed documentation visit the [templify-docs](https://templify.phi
 
 -   [Concept](#concept)
 -   [Installation](#installation)
-    -   [Linux](#linux)
+    -   [Linux / macOS](#linux--macos)
     -   [Windows](#windows)
 -   [Docker](#docker)
--   [Development Installation](#development-installation)
+-   [Development](#development)
+    -   [Installation](#installation-1)
+    -   [CI Pipeline](#ci-pipeline)
 -   [Templates](#templates)
 -   [.templify](#templify)
 -   [Usage](#usage)
@@ -69,7 +71,7 @@ You can see a real world example [here](https://github.com/cophilot/templify-doc
 
 ## Installation
 
-### Linux
+### Linux / macOS
 
 Run the following command in your terminal to isntall the latest version of templify:
 
@@ -120,11 +122,32 @@ docker run -it templify-image bash
 
 ---
 
-## Development Installation
+## Development
+
+### Installation
+
+You can either run the CLI tool directly on your machine or use the dev-container.
+
+#### Local
 
 1. Clone the repository
 2. Run `./scripts/setup`
-3. Now you can run `cargo run <command> --dev` to run the CLI tool
+3. Now you can run `cargo run <arguments> --dev` to run the CLI tool
+
+#### Dev-Container
+
+TODO
+
+### CI Pipeline
+
+The CI pipeline ensures the quality of the code. It runs the following checks:
+
+-   **Format Check**: Checks if the code is formatted correctly (Script: [format-check](scripts/format-check))
+-   **Comment Check**: Checks if the code contains enough comments (Script: [comment-check](scripts/comment-check))
+-   **Linter**: Checks if the code is linted correctly (Script: [lint](scripts/lint))
+-   **Test**: Runs the test suite (Script: [test](scripts/test))
+
+> You can find the pipeline configuration in the [.github/workflows/check_rust_quality.yml](.github/workflows/check_rust_quality.yml) file.
 
 ---
 
