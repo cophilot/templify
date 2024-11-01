@@ -261,7 +261,7 @@ fn load_gitlab_template(response: serde_json::Value, path: &str, url: &str, forc
             return Status::error(format!("Invalid url: {}\n", url));
         }
 
-        let formatted_blob_url = &format_blob_url(base_url, &item);
+        let formatted_blob_url = &format_blob_url(base_url, item);
 
         let st = load_remote_gitlab_template_file(formatted_path, formatted_blob_url, force);
         if !st.is_ok {
@@ -269,7 +269,7 @@ fn load_gitlab_template(response: serde_json::Value, path: &str, url: &str, forc
         }
     }
 
-    return Status::ok();
+    Status::ok()
 }
 
 /// Load a template from a github repository
@@ -294,7 +294,7 @@ fn load_github_template(response: serde_json::Value, path: &str, url: &str, forc
         }
     }
 
-    return Status::ok();
+    Status::ok()
 }
 
 /// Load a directory from a remote repository
@@ -357,6 +357,7 @@ fn load_remote_template_dir(path: &str, url: &str, force: bool) -> Status {
     Status::ok()
 }
 
+/// Load Gitlab Template Directory
 fn load_remote_gitlab_template_dir(path: &str, url: &str, force: bool) -> Status {
     if !force && Path::new(path).exists() {
         return Status::error(format!(
@@ -403,7 +404,7 @@ fn load_remote_gitlab_template_dir(path: &str, url: &str, force: bool) -> Status
         if base_url.is_empty() {
             return Status::error(format!("Invalid url: {}\n", url));
         }
-        let formatted_blob_url = &format_blob_url(base_url, &item);
+        let formatted_blob_url = &format_blob_url(base_url, item);
 
         load_remote_gitlab_template_file(formatted_path, formatted_blob_url, force);
     }
@@ -612,18 +613,12 @@ pub(crate) fn generate_template_file(
 
 /// Format Path for loading Gitlab Template
 fn format_path_or_url(path_or_url: &str, item: &serde_json::Value) -> String {
-    return format!("{}/{}", path_or_url, item["name"].as_str().unwrap_or("")).replace('"', "");
+    format!("{}/{}", path_or_url, item["name"].as_str().unwrap_or("")).replace('"', "")
 }
 
 /// Format URL for loading Gitlab File Blob
 fn format_blob_url(base_url: &str, item: &serde_json::Value) -> String {
-    return format!("{}/blobs/{}", base_url, item["id"].as_str().unwrap_or("")).replace('"', "");
-}
-
-/// Check for valid gitlab url
-fn is_valid_gitlab_url(url: &str) -> bool {
-    let gitlab_url_pattern = Regex::new(r"^https:\/\/(?:[\w-]+\.)*gitlab\.com(?:\/.*)?$").unwrap();
-    gitlab_url_pattern.is_match(url)
+    format!("{}/blobs/{}", base_url, item["id"].as_str().unwrap_or("")).replace('"', "")
 }
 
 /// Determine the URL Type (Gitlab , Github) from the url
@@ -640,4 +635,10 @@ fn determine_url_type(url: &str) -> Result<URLType, Status> {
     };
 
     Ok(url_type)
+}
+
+/// Check for valid gitlab url
+fn is_valid_gitlab_url(url: &str) -> bool {
+    let gitlab_url_pattern = Regex::new(r"^https:\/\/(?:[\w-]+\.)*gitlab\.com(?:\/.*)?$").unwrap();
+    gitlab_url_pattern.is_match(url)
 }
