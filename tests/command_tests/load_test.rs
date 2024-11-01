@@ -73,6 +73,8 @@ pub fn check_github_load() {
     fs::templates_dir().dir("Test1").check_not_exists();
 
     utils::reset_dir();
+
+    utils::run_failure("tpy load https://my-gitlab.company.com");
 }
 
 pub fn check_gitlab_test_structure() {

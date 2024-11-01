@@ -6,6 +6,7 @@ use crate::types::status::Status;
 use crate::utils;
 
 /// This enum is used to define type of URL (.i.e.. GitHub, GitLab)
+#[derive(Clone)]
 pub(crate) enum URLType {
     GitHub,
     GitLab,
@@ -53,17 +54,6 @@ pub(crate) fn load(command: &Command) -> Status {
 
     let url = command.get_argument("url").value.clone();
 
-    let url_type = if url.starts_with("https://github.com") {
-        URLType::GitHub
-    } else if url.starts_with("https://gitlab.com") {
-        URLType::GitLab
-    } else {
-        return Status::error(format!(
-            "Invalid url: {}\nOnly templates from GitHub and Gitlab are supported at the moment.",
-            url
-        ));
-    };
-
     let load_template = command.get_bool_flag("template");
     if load_template {
         log!("Loading template from {}...", url);
@@ -72,7 +62,7 @@ pub(crate) fn load(command: &Command) -> Status {
             format!(".templates/{}", name).as_str(),
             url.as_str(),
             command.get_bool_flag("force"),
-            &url_type,
+            None,
         );
         if !st.is_ok {
             return st;
@@ -83,7 +73,6 @@ pub(crate) fn load(command: &Command) -> Status {
             ".templates",
             url.as_str(),
             command.get_bool_flag("force"),
-            &url_type,
         );
         if !st.is_ok {
             return st;
