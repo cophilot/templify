@@ -167,6 +167,8 @@ The `.templify` file contains metadata about the template. It is a key-value fil
 
 ---
 
+test
+
 ## Usage
 
 ```bash
