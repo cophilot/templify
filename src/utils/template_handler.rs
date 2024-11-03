@@ -1,7 +1,10 @@
 use crate::log;
+use crate::types::load_types::URLType;
 use crate::types::status::Status;
 use crate::types::template_meta::TemplateMeta;
 use crate::utils::formater;
+use base64::{engine::general_purpose::STANDARD, Engine as _};
+use regex::Regex;
 use std::io::Write;
 use std::path::Path;
 
@@ -80,10 +83,13 @@ pub(crate) fn reload_template(name: String, strict: bool, reset: bool) -> Status
         std::fs::rename(&dir, &backup_dir).unwrap();
     }
 
+    let url = meta.get_source();
+
     let st = load_remote_template(
         format!(".templates/{}", name).as_str(),
-        meta.get_source().as_str(),
+        url.as_str(),
         true,
+        None,
     );
     if !st.is_ok {
         if reset {
@@ -102,6 +108,11 @@ pub(crate) fn reload_template(name: String, strict: bool, reset: bool) -> Status
 
 /// Load a collection of templates from a remote repository
 pub(crate) fn load_remote_template_collection(path: &str, url: &str, force: bool) -> Status {
+    let url_type = match determine_url_type(url) {
+        Ok(url_type) => url_type,
+        Err(st) => return st,
+    };
+
     let response = rest::json_call(url);
     if response.is_err() {
         return Status::error(format!(
@@ -118,9 +129,18 @@ pub(crate) fn load_remote_template_collection(path: &str, url: &str, force: bool
     }
     let response: serde_json::Value = response.unwrap();
 
-    let items = response["payload"]["tree"]["items"].as_array().unwrap();
+    let items = match url_type {
+        URLType::GitHub => response["payload"]["tree"]["items"].as_array().unwrap(),
+        URLType::GitLab => response.as_array().unwrap(),
+    };
+
     for item in items {
-        if item["contentType"] == "directory" {
+        let check_collection = match url_type {
+            URLType::GitHub => item["contentType"] == "directory",
+            URLType::GitLab => item["type"] == "tree",
+        };
+
+        if check_collection {
             let st = load_remote_template(
                 format!("{}/{}", path, item["name"])
                     .replace('"', "")
@@ -129,23 +149,38 @@ pub(crate) fn load_remote_template_collection(path: &str, url: &str, force: bool
                     .replace('"', "")
                     .as_str(),
                 force,
+                Some(&url_type),
             );
             if !st.is_ok {
                 return st;
             }
         }
     }
+
     Status::ok()
 }
 
 /// Load a template from a remote repository
-pub(crate) fn load_remote_template(path: &str, url: &str, force: bool) -> Status {
+pub(crate) fn load_remote_template(
+    path: &str,
+    url: &str,
+    force: bool,
+    url_type: Option<&URLType>,
+) -> Status {
     if !force && Path::new(path).exists() {
         return Status::error(format!(
             "Template {} already exists...",
             path.replace(".templates/", "")
         ));
     }
+
+    let url_type_info: URLType = match url_type {
+        Some(ut) => ut.clone(),
+        None => match determine_url_type(url) {
+            Ok(ut) => ut,
+            Err(st) => return st,
+        },
+    };
 
     if !Path::new(path).exists() {
         std::fs::create_dir(path).unwrap();
@@ -167,37 +202,13 @@ pub(crate) fn load_remote_template(path: &str, url: &str, force: bool) -> Status
     }
     let response: serde_json::Value = response.unwrap();
 
-    let items = response["payload"]["tree"]["items"].as_array().unwrap();
+    let status = match url_type_info {
+        URLType::GitHub => load_github_template(response, path, url, force),
+        URLType::GitLab => load_gitlab_template(response, path, url, force),
+    };
 
-    for item in items {
-        if item["contentType"] == "directory" {
-            let st = load_remote_template_dir(
-                format!("{}/{}", path, item["name"])
-                    .replace('"', "")
-                    .as_str(),
-                format!("{}/{}", url, item["name"])
-                    .replace('"', "")
-                    .as_str(),
-                force,
-            );
-            if !st.is_ok {
-                return st;
-            }
-            continue;
-        }
-
-        let st = load_remote_template_file(
-            format!("{}/{}", path, item["name"])
-                .replace('"', "")
-                .as_str(),
-            format!("{}/{}", url, item["name"])
-                .replace('"', "")
-                .as_str(),
-            force,
-        );
-        if !st.is_ok {
-            return st;
-        }
+    if !status.is_ok {
+        return status;
     }
 
     let temp_file = format!("{}/.templify", path);
@@ -225,6 +236,64 @@ pub(crate) fn load_remote_template(path: &str, url: &str, force: bool) -> Status
     }
 
     log!("Loaded template: {}", path.replace(".templates/", ""));
+    Status::ok()
+}
+
+/// Load a template from a gitlab repository
+fn load_gitlab_template(response: serde_json::Value, path: &str, url: &str, force: bool) -> Status {
+    let items = response.as_array().unwrap();
+
+    for item in items {
+        let formatted_path = &format_path_or_url(path, item);
+        let formatted_url = &format_path_or_url(url, item);
+
+        if item["type"] == "tree" {
+            let st = load_remote_gitlab_template_dir(formatted_path, formatted_url, force);
+            if !st.is_ok {
+                return st;
+            }
+            continue;
+        }
+
+        let base_url = url.split("/tree").next().unwrap_or("");
+
+        if base_url.is_empty() {
+            return Status::error(format!("Invalid url: {}\n", url));
+        }
+
+        let formatted_blob_url = &format_blob_url(base_url, item);
+
+        let st = load_remote_gitlab_template_file(formatted_path, formatted_blob_url, force);
+        if !st.is_ok {
+            return st;
+        }
+    }
+
+    Status::ok()
+}
+
+/// Load a template from a github repository
+fn load_github_template(response: serde_json::Value, path: &str, url: &str, force: bool) -> Status {
+    let items = response["payload"]["tree"]["items"].as_array().unwrap();
+
+    for item in items {
+        let formatted_path = &format_path_or_url(path, item);
+        let formatted_url = &format_path_or_url(url, item);
+
+        if item["contentType"] == "directory" {
+            let st = load_remote_template_dir(formatted_path, formatted_url, force);
+            if !st.is_ok {
+                return st;
+            }
+            continue;
+        }
+
+        let st = load_remote_template_file(formatted_path, formatted_url, force);
+        if !st.is_ok {
+            return st;
+        }
+    }
+
     Status::ok()
 }
 
@@ -288,6 +357,60 @@ fn load_remote_template_dir(path: &str, url: &str, force: bool) -> Status {
     Status::ok()
 }
 
+/// Load Gitlab Template Directory
+fn load_remote_gitlab_template_dir(path: &str, url: &str, force: bool) -> Status {
+    if !force && Path::new(path).exists() {
+        return Status::error(format!(
+            "Directory {} already exists...",
+            path.replace(".templates/", "")
+        ));
+    }
+
+    if !Path::new(path).exists() {
+        std::fs::create_dir(path).unwrap();
+    }
+
+    let response = rest::json_call(url);
+    if response.is_err() {
+        return Status::error(format!(
+            "Failed to get template from {}: Request failed",
+            url
+        ));
+    }
+    let response = response.unwrap().json();
+    if response.is_err() {
+        return Status::error(format!(
+            "Failed to get template from {}: JSON parse error",
+            url
+        ));
+    }
+    let response: serde_json::Value = response.unwrap();
+    let items = response.as_array().unwrap();
+
+    for item in items {
+        let formatted_path = &format_path_or_url(path, item);
+        let formatted_url = &format_path_or_url(url, item);
+
+        if item["type"] == "tree" {
+            let st = load_remote_gitlab_template_dir(formatted_path, formatted_url, force);
+            if !st.is_ok {
+                return st;
+            }
+            continue;
+        }
+
+        let base_url = url.split("/tree").next().unwrap_or("");
+
+        if base_url.is_empty() {
+            return Status::error(format!("Invalid url: {}\n", url));
+        }
+        let formatted_blob_url = &format_blob_url(base_url, item);
+
+        load_remote_gitlab_template_file(formatted_path, formatted_blob_url, force);
+    }
+    Status::ok()
+}
+
 /// Load a file from a remote repository
 fn load_remote_template_file(path: &str, url: &str, force: bool) -> Status {
     if Path::new(path).exists() && !force {
@@ -319,6 +442,73 @@ fn load_remote_template_file(path: &str, url: &str, force: bool) -> Status {
         .map(|x| x.as_str().unwrap())
         .collect::<Vec<&str>>()
         .join("\n");
+
+    text = text.replace("\\n", "\n");
+
+    // create all subdirs if they don't exist
+    let path_dir = path.split('/').collect::<Vec<&str>>();
+    let path_dir = path_dir[..path_dir.len() - 1].join("/");
+    std::fs::create_dir_all(path_dir.clone()).unwrap();
+
+    let mut new_file = std::fs::File::create(path).unwrap();
+    new_file.write_all(text.as_bytes()).unwrap();
+
+    log!("Created file {}", path);
+    Status::ok()
+}
+
+/// Load a file from gitlab remote repository
+fn load_remote_gitlab_template_file(path: &str, url: &str, force: bool) -> Status {
+    if Path::new(path).exists() && !force {
+        return Status::error(format!(
+            "File {} already exists...",
+            path.replace(".templates/", "")
+        ));
+    }
+
+    let response = rest::json_call(url);
+    if response.is_err() {
+        return Status::error(format!(
+            "Failed to get template from {}: Request failed",
+            url
+        ));
+    }
+    let response = response.unwrap().json();
+    if response.is_err() {
+        return Status::error(format!(
+            "Failed to get template from {}: JSON parse error",
+            url
+        ));
+    }
+    let response: serde_json::Value = response.unwrap();
+
+    let content = response["content"].as_str();
+    let encoding = response["encoding"].as_str();
+
+    if encoding.unwrap_or("") != "base64" || content.is_none() {
+        return Status::error(format!(
+            "Failed to get template from {}: Decoding Error",
+            url
+        ));
+    }
+
+    let mut text = match STANDARD.decode(content.unwrap()) {
+        Ok(decoded) => match String::from_utf8(decoded) {
+            Ok(message) => message,
+            Err(_e) => {
+                return Status::error(format!(
+                    "Failed to get template from {}: Decoding Error",
+                    url
+                ))
+            }
+        },
+        Err(_e) => {
+            return Status::error(format!(
+                "Failed to get template from {}: Decoding Error",
+                url
+            ))
+        }
+    };
 
     text = text.replace("\\n", "\n");
 
@@ -419,4 +609,36 @@ pub(crate) fn generate_template_file(
 
     log!("Created file {}", abs_path.to_str().unwrap());
     true
+}
+
+/// Format Path for loading Gitlab Template
+fn format_path_or_url(path_or_url: &str, item: &serde_json::Value) -> String {
+    format!("{}/{}", path_or_url, item["name"].as_str().unwrap_or("")).replace('"', "")
+}
+
+/// Format URL for loading Gitlab File Blob
+fn format_blob_url(base_url: &str, item: &serde_json::Value) -> String {
+    format!("{}/blobs/{}", base_url, item["id"].as_str().unwrap_or("")).replace('"', "")
+}
+
+/// Determine the URL Type (Gitlab , Github) from the url
+fn determine_url_type(url: &str) -> Result<URLType, Status> {
+    let url_type = if url.starts_with("https://github.com") {
+        URLType::GitHub
+    } else if is_valid_gitlab_url(url) {
+        URLType::GitLab
+    } else {
+        return Err(Status::error(format!(
+            "Invalid url: {}\nOnly templates from GitHub and Gitlab are supported at the moment.",
+            url
+        )));
+    };
+
+    Ok(url_type)
+}
+
+/// Check for valid gitlab url
+fn is_valid_gitlab_url(url: &str) -> bool {
+    let gitlab_url_pattern = Regex::new(r"^https:\/\/(?:[\w-]+\.)*gitlab\.com(?:\/.*)?$").unwrap();
+    gitlab_url_pattern.is_match(url)
 }

@@ -17,7 +17,7 @@ pub(crate) fn definition() -> Command {
         "url".to_string(),
         0,
         true,
-        "The url of the github repository.".to_string(),
+        "The url of the github or gitlab repository.".to_string(),
     ));
 
     load_command.add_flag(Flag::new_bool_flag(
@@ -46,12 +46,6 @@ pub(crate) fn load(command: &Command) -> Status {
     }
 
     let url = command.get_argument("url").value.clone();
-    if !url.starts_with("https://github.com") {
-        return Status::error(format!(
-            "Invalid url: {}\nOnly templates from GitHub are supported at the moment.",
-            url
-        ));
-    }
 
     let load_template = command.get_bool_flag("template");
     if load_template {
@@ -61,6 +55,7 @@ pub(crate) fn load(command: &Command) -> Status {
             format!(".templates/{}", name).as_str(),
             url.as_str(),
             command.get_bool_flag("force"),
+            None,
         );
         if !st.is_ok {
             return st;

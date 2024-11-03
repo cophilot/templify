@@ -2,6 +2,7 @@ pub mod argument;
 pub mod command;
 pub mod flag;
 pub mod global_flag;
+pub mod load_types;
 pub mod status;
 pub mod template_meta;
 pub mod var_placeholder;
