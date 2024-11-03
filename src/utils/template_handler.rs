@@ -1,5 +1,5 @@
-use crate::commands::load::URLType;
 use crate::log;
+use crate::types::load_types::URLType;
 use crate::types::status::Status;
 use crate::types::template_meta::TemplateMeta;
 use crate::utils::formater;

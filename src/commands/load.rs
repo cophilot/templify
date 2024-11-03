@@ -5,13 +5,6 @@ use crate::types::flag::Flag;
 use crate::types::status::Status;
 use crate::utils;
 
-/// This enum is used to define type of URL (.i.e.. GitHub, GitLab)
-#[derive(Clone)]
-pub(crate) enum URLType {
-    GitHub,
-    GitLab,
-}
-
 /// The definition of the load command.
 pub(crate) fn definition() -> Command {
     let mut load_command = Command::new(
