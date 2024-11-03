@@ -5,6 +5,7 @@
 ## [v2.0.0](https://github.com/cophilot/templify/tree/2.0.0) (2024-X-X)
 
 -   Added warning when updating to a new major version [#6](https://github.com/cophilot/templify/issues/6)
+-   Supports loading templates from Gitlab repositories [#11](https://github.com/cophilot/templify/issues/11)
 
 ---
 
