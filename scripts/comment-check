@@ -1,3 +1,8 @@
 #!/bin/bash
 
-python3 scripts/py/check_comment.py
+if command -v python &> /dev/null
+then
+    python scripts/py/check_comment.py
+else
+    python3 scripts/py/check_comment.py
+fi

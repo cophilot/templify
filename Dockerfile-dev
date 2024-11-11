@@ -1,6 +1,11 @@
 FROM ubuntu:24.04
 
-RUN apt update
-RUN apt install -y curl python3
 
-COPY scripts /usr/local/bin
+WORKDIR /workspace
+
+RUN apt update
+RUN apt install -y curl python3 git
+
+#RUN cp -r /workspaces/templify/scripts/bin/* /usr/local/bin
+
+#RUN /workspaces/templify/scripts/setup

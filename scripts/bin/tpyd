@@ -1,0 +1,3 @@
+#!/bin/bash
+#templify development command
+cargo run $* --dev
