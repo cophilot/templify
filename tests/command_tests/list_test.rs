@@ -6,12 +6,12 @@ pub fn test() {
     utils::init_tpy();
 
     utils::run_successfully("tpy new Test1");
-    std::fs::write(".templates/Test1/.templify", "").unwrap();
+    std::fs::write(".templates/Test1/.templify.yml", "").unwrap();
 
     utils::run_successfully("tpy new Test2");
     std::fs::write(
-        ".templates/Test2/.templify",
-        "description:test2_description",
+        ".templates/Test2/.templify.yml",
+        "description: test2_description",
     )
     .unwrap();
 

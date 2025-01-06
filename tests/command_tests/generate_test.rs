@@ -153,10 +153,11 @@ pub fn test() {
     // test variable placeholders
     fs::templates_dir()
         .dir("Command")
-        .file(".templify")
-        .append_line("var:test1")
-        .append_line("var:test2(default_value)")
-        .append_line("var:test3[opt1,opt2,opt3]");
+        .file(".templify.yml")
+        .append_line("vars:")
+        .append_line(" - test1")
+        .append_line(" - test2(default_value)")
+        .append_line(" - test3[opt1,opt2,opt3]");
     fs::templates_dir()
         .dir("Command")
         .file("TestCommand.txt")

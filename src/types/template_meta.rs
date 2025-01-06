@@ -1,4 +1,6 @@
 use crate::types::var_placeholder_collection::VarPlaceholderCollection;
+use yaml_rust::yaml::Yaml;
+use yaml_rust::YamlLoader;
 
 #[derive(Clone)]
 /// The meta information of a template.
@@ -18,7 +20,10 @@ impl TemplateMeta {
         map.insert("path".to_string(), ".".to_string());
         map.insert(".source".to_string(), "".to_string());
 
-        let file_path = format!(".templates/{}/.templify", template_name);
+        let mut file_path = format!(".templates/{}/.templify.yaml", template_name);
+        if !std::path::Path::new(&file_path).exists() {
+            file_path = format!(".templates/{}/.templify.yml", template_name);
+        }
 
         TemplateMeta {
             template_name: template_name.clone(),
@@ -38,47 +43,43 @@ impl TemplateMeta {
         }
 
         let file_content = file_content.unwrap();
+        let yaml = match YamlLoader::load_from_str(&file_content) {
+            Ok(yaml) => yaml,
+            Err(_) => return meta,
+        };
 
-        let mut divider = ":".to_string();
-
-        let first_line = file_content.lines().next();
-        if first_line.is_none() {
+        if yaml.is_empty() {
             return meta;
         }
 
-        let first_line = first_line.unwrap().replace(' ', "");
-        if first_line.starts_with("#?") {
-            let new_divider = first_line.clone().replace("#?", "");
-
-            divider = new_divider.to_string();
-        }
-
-        for line in file_content.lines() {
-            let line = line.trim();
-            if line.starts_with('#') || line.is_empty() {
-                continue;
-            }
-
-            let parts: Vec<&str> = line.split(divider.as_str()).collect();
-            if parts.len() < 2 {
-                continue;
-            }
-            let mut second_part = parts[1].to_string();
-            if parts.len() > 2 {
-                for part in parts.iter().skip(2) {
-                    second_part.push_str(format!("{}{}", divider, part).as_str());
+        let yaml = &yaml[0];
+        if let Yaml::Hash(hash) = yaml {
+            for (key, value) in hash {
+                let k = key.as_str().unwrap().to_string();
+                if k == "vars" || k == "variables" {
+                    if value.is_array() {
+                        for v in value.as_vec().unwrap() {
+                            let v = v.as_str().unwrap().to_string();
+                            meta.var_placeholder_collection
+                                .add_from_conf_string(v.clone());
+                        }
+                        continue;
+                    }
+                    // when the value is not an array, it is a string
+                    let v = value.as_str().unwrap().to_string();
+                    meta.var_placeholder_collection
+                        .add_from_conf_string(v.clone());
+                    continue;
                 }
+
+                let mut v_opt = value.as_str();
+                if v_opt.is_none() {
+                    v_opt = Some("");
+                }
+                let v = v_opt.unwrap().to_string();
+
+                meta.map.insert(k.clone(), v.clone());
             }
-
-            let key = parts[0].trim().to_string().to_lowercase();
-            let value = second_part.trim().to_string();
-
-            if key == "var" || key == "variable" {
-                meta.var_placeholder_collection.add_from_conf_string(value);
-                continue;
-            }
-
-            meta.map.insert(key, value);
         }
 
         meta

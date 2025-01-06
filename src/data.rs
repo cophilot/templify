@@ -1,18 +1,21 @@
 /// Get the content for a new templify file
-pub fn templify_file_blank(description: String, path: String) -> String {
-    let content = format!("#?:
+pub fn templify_file_blank(name: String, description: String, path: String) -> String {
+    let content = format!("# This is the '{}' template
 # This file is used by templify to generate new files from this template.
 # You can use the following variables in this file:
 
 # description: The description of the template 
 # path: The path where the file should be generated based on the project root (you can also use placeholders here)
-# var: Define a variable placeholder that can be used in the file content
+# vars: # Define a variable placeholders that can be used in the file content
+#    - package # Variable Placeholder
+#    - subdir(src) # Variable Placeholder with default value
+#    - project[frontend,backend] # Variable Placeholder with list of values
 
 # IMPORTANT: Lines starting with a . are auto generated and should not be changed.
 
-description:{}
-path:{}
-", description, path);
+description: {}
+path: {}
+", name, description, path);
 
     content.to_string()
 }
@@ -50,7 +53,7 @@ tpy new <template-name>
 ```
 
 This will create a new folder in the `.templates` folder with the given name. You can now add files to this folder that will be used to generate new files from this template.
-Inside the folder you will also find a `.templify` file. This file is used by templify to generate new files from this template. Please open and read the file to learn more about how to use it.
+Inside the folder you will also find a `.templify.yml` file. This file is used by templify to generate new files from this template. Please open and read the file to learn more about how to use it.
 
 ### Load templates 
 
