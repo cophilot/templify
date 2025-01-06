@@ -99,19 +99,23 @@ pub fn check_test_1_structure() {
         );
     fs::templates_dir()
         .dir("Test1")
-        .file(".templify")
-        .contains_string("description:This is used to test templify")
-        .contains_string("path:src")
-        .contains_string(".source:https://github.com/cophilot/templify-vault/tree/main/Test/Test1");
+        .file(".templify.yml")
+        .contains_string("description: This is used to test templify")
+        .contains_string("path: src")
+        .contains_string(
+            ".source: https://github.com/cophilot/templify-vault/tree/main/Test/Test1",
+        );
 }
 
 pub fn check_test_2_structure() {
     let mut base = fs::templates_dir().dir("Test2");
 
-    base.file(".templify")
-        .contains_string("description:This is used to test templify")
-        .contains_string("path:src")
-        .contains_string(".source:https://github.com/cophilot/templify-vault/tree/main/Test/Test2");
+    base.file(".templify.yml")
+        .contains_string("description: This is used to test templify")
+        .contains_string("path: src")
+        .contains_string(
+            ".source: https://github.com/cophilot/templify-vault/tree/main/Test/Test2",
+        );
     base.file("file.txt")
         .contains_string("A elephant can eat 300 pounds of food in a day.");
     base.dir("subdir")
@@ -130,11 +134,11 @@ pub fn check_my_test_structure() {
         .contains_string("Nebraska has the largest indoor rainforest in the world.");
     fs::templates_dir()
         .dir("MyTest")
-        .file(".templify")
-        .contains_string("description:This is used to test templify")
-        .contains_string("path:src")
+        .file(".templify.yml")
+        .contains_string("description: This is used to test templify")
+        .contains_string("path: src")
         .contains_string(
-            ".source:https://github.com/cophilot/templify-vault/tree/main/Test/MyTest",
+            ".source: https://github.com/cophilot/templify-vault/tree/main/Test/MyTest",
         );
 }
 
@@ -148,19 +152,19 @@ pub fn check_gitlab_test_1_structure() {
         );
     fs::templates_dir()
         .dir("Test1")
-        .file(".templify")
-        .contains_string("description:This is used to test templify")
-        .contains_string("path:src")
-        .contains_string(".source:https://gitlab.com/api/v4/projects/cophilot%2Ftemplify-vault/repository/tree?path=Test/Test1");
+        .file(".templify.yml")
+        .contains_string("description: This is used to test templify")
+        .contains_string("path: src")
+        .contains_string(".source: https://gitlab.com/api/v4/projects/cophilot%2Ftemplify-vault/repository/tree?path=Test/Test1");
 }
 
 pub fn check_gitlab_test_2_structure() {
     let mut base = fs::templates_dir().dir("Test2");
 
-    base.file(".templify")
-        .contains_string("description:This is used to test templify")
-        .contains_string("path:src")
-        .contains_string(".source:https://gitlab.com/api/v4/projects/cophilot%2Ftemplify-vault/repository/tree?path=Test/Test2");
+    base.file(".templify.yml")
+        .contains_string("description: This is used to test templify")
+        .contains_string("path: src")
+        .contains_string(".source: https://gitlab.com/api/v4/projects/cophilot%2Ftemplify-vault/repository/tree?path=Test/Test2");
     base.file("file.txt")
         .contains_string("A elephant can eat 300 pounds of food in a day.");
     base.dir("subdir")
@@ -179,10 +183,10 @@ pub fn check_gitlab_my_test_structure() {
         .contains_string("Nebraska has the largest indoor rainforest in the world.");
     fs::templates_dir()
         .dir("MyTest")
-        .file(".templify")
-        .contains_string("description:This is used to test templify")
-        .contains_string("path:src")
+        .file(".templify.yml")
+        .contains_string("description: This is used to test templify")
+        .contains_string("path: src")
         .contains_string(
-            ".source:https://gitlab.com/api/v4/projects/cophilot%2Ftemplify-vault/repository/tree?path=Test/MyTest",
+            ".source: https://gitlab.com/api/v4/projects/cophilot%2Ftemplify-vault/repository/tree?path=Test/MyTest",
         );
 }

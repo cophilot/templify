@@ -44,7 +44,7 @@ For a more detailed documentation visit the [templify-docs](https://templify.phi
     -   [Installation](#installation-1)
     -   [CI Pipeline](#ci-pipeline)
 -   [Templates](#templates)
--   [.templify](#templify)
+-   [.templify.yml](#templifyyml)
 -   [Usage](#usage)
     -   [help](#help)
     -   [version](#version)
@@ -154,13 +154,13 @@ The CI pipeline ensures the quality of the code. It runs the following checks:
 ## Templates
 
 A template is a folder in the `.templates` directory of your project. It contains all files and subfolders that should be generated when the template is used. You can use [placeholders](#placeholders) to replace parts of the template with the given values.
-Each template must contain a `.templify` file that specifies some metadata about the template.
+Each template must contain a `.templify.yml` file that specifies some metadata about the template.
 
 ---
 
-## .templify
+## .templify.yml
 
-The `.templify` file contains metadata about the template. It is a key-value file with the following keys:
+The `.templify.yml` file contains metadata about the template. It is a YAML file with the following keys:
 
 -   `description`: A short description of the template
 -   `path`: The path where the generated files should be placed based on the root of the project. This can also be a path with [placeholders](#placeholders) in it.
@@ -293,13 +293,17 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 -   Added `-var` flag for the `generate` command
 -   Added `-default-var` flag for the `generate` command
 -   Short forms for case conversion
--   Added divider selection support in the `.templify` file
+-   Added divider selection support in the `.templify.yml` file
 -   Added global flag support
 -   Added `--quiet` global flag
 -   Added `--dev` global flag
 -   Added `--log-file` global flag
 -   Initialize test suite
 -   CI pipeline for code quality checks
+
+---
+
+Implemented with **Rust 1.82.0** 🦀
 
 ---
 

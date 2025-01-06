@@ -10,7 +10,7 @@ pub fn test() {
 
     fs::templates_dir()
         .dir("Test1")
-        .file(".templify")
+        .file(".templify.yml")
         .check_all_exists();
 
     utils::run_failure("tpy new Test1");
@@ -20,9 +20,9 @@ pub fn test() {
 
     fs::templates_dir()
         .dir("Test2")
-        .file(".templify")
+        .file(".templify.yml")
         .check_all_exists()
-        .contains_string("description:this_is_a_description");
+        .contains_string("description: this_is_a_description");
 
     utils::run_failure("tpy new Test2");
 
@@ -31,9 +31,9 @@ pub fn test() {
 
     fs::templates_dir()
         .dir("Test3")
-        .file(".templify")
+        .file(".templify.yml")
         .check_all_exists()
-        .contains_string("path:this/is/a/path");
+        .contains_string("path: this/is/a/path");
 
     utils::run_failure("tpy new Test3");
 
@@ -44,10 +44,10 @@ pub fn test() {
 
     fs::templates_dir()
         .dir("Test4")
-        .file(".templify")
+        .file(".templify.yml")
         .check_all_exists()
-        .contains_string("description:this_is_a_description")
-        .contains_string("path:this/is/a/path");
+        .contains_string("description: this_is_a_description")
+        .contains_string("path: this/is/a/path");
 
     utils::run_failure("tpy new Test4");
 }

@@ -21,7 +21,13 @@ jobs:
         steps:
             - uses: actions/checkout@v2
               with:
-                  ref: ${{ inputs.branch || 'dev' }}
+                  ref: ${{ inputs.branch || github.ref }}
+            
+            - name: Set up Rust
+              uses: actions-rs/toolchain@v1
+              with:
+                  toolchain: 1.82.0
+                  override: true
 
             - name: Check formatting
               run: ./scripts/format-check

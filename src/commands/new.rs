@@ -53,15 +53,16 @@ pub(crate) fn new(command: &Command) -> Status {
     std::fs::create_dir(&template_path).unwrap();
 
     std::fs::write(
-        format!("{}/.templify", template_path),
+        format!("{}/.templify.yml", template_path),
         crate::data::templify_file_blank(
+            template_name.clone(),
             command.get_value_flag("description").clone(),
             command.get_value_flag("path").clone(),
         ),
     )
     .unwrap();
 
-    log!("Template {} created successfully.", template_name);
+    log!("Template '{}' created successfully.", template_name);
 
     Status::ok()
 }

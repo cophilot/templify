@@ -211,27 +211,31 @@ pub(crate) fn load_remote_template(
         return status;
     }
 
-    let temp_file = format!("{}/.templify", path);
+    let mut temp_file = format!("{}/.templify.yaml", path);
 
     if !Path::new(temp_file.as_str()).exists() {
-        // create .templify file
-        std::fs::File::create(temp_file).unwrap();
+        temp_file = format!("{}/.templify.yml", path);
     }
 
-    // write to .templify file
+    // create .templify.yml file if not exists
+    if !Path::new(temp_file.as_str()).exists() {
+        std::fs::File::create(temp_file.clone()).unwrap();
+    }
+
+    // write to .templify.yml file
     let mut file = std::fs::OpenOptions::new()
         .append(true)
-        .open(format!("{}/.templify", path).as_str())
+        .open(temp_file.clone())
         .unwrap();
 
     // check if url already exists in .templify file
-    let file_content = std::fs::read_to_string(format!("{}/.templify", path).as_str());
+    let file_content = std::fs::read_to_string(temp_file.clone());
     if file_content.is_err() {
         return Status::ok();
     }
     let file_content = file_content.unwrap();
     if !file_content.contains(".source") {
-        file.write_all(format!("\n\n.source:{}", url).as_bytes())
+        file.write_all(format!("\n\n.source: {}", url).as_bytes())
             .unwrap();
     }
 
@@ -534,11 +538,18 @@ pub(crate) fn generate_template_dir(
     force: bool,
 ) -> bool {
     let paths = std::fs::read_dir(path).unwrap();
+    let files_to_ignore = [
+        ".templify",
+        ".templify.yml",
+        ".templify.yaml",
+        ".tpykeep",
+        ".templifykeep",
+    ];
     for path in paths {
         let path = path.unwrap().path();
         let file_name = path.file_name().unwrap().to_str().unwrap();
 
-        if file_name == ".templify" || file_name == ".tpykeep" || file_name == ".templifykeep" {
+        if files_to_ignore.contains(&file_name) {
             continue;
         }
 
