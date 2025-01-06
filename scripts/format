@@ -2,4 +2,5 @@
 
 rustup component add rustfmt  > /dev/null 2>&1
 
+cargo fmt --version
 cargo fmt --all
