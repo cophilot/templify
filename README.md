@@ -303,4 +303,8 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ---
 
+Implemented with **Rust 1.82.0** 🦀
+
+---
+
 by [Philipp B.](https://github.com/cophilot)
