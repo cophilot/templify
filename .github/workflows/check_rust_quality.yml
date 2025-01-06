@@ -21,7 +21,7 @@ jobs:
         steps:
             - uses: actions/checkout@v2
               with:
-                  ref: ${{ inputs.branch || 'dev' }}
+                  ref: ${{ inputs.branch || github.ref }}
 
             - name: Check formatting
               run: ./scripts/format-check
