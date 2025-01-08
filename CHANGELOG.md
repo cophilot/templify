@@ -7,6 +7,7 @@
 -   Added warning when updating to a new major version [#6](https://github.com/cophilot/templify/issues/6)
 -   Supports loading templates from Gitlab repositories [#11](https://github.com/cophilot/templify/issues/11)
 -   Using YAML format for `.templify` (now `.templify.yml`) files [#5](https://github.com/cophilot/templify/issues/5)
+-   Generate snippets when gerating from a template [#3](https://github.com/cophilot/templify/issues/3)
 
 ---
 
