@@ -6,12 +6,19 @@ pub fn templify_file_blank(name: String, description: String, path: String) -> S
 # This file is used by templify to generate new files from this template.
 # You can use the following variables in this file:
 
-# description: The description of the template 
-# path: The path where the file should be generated based on the project root (you can also use placeholders here)
-# vars: # Define a variable placeholders that can be used in the file content
-#    - package # Variable Placeholder
-#    - subdir(src) # Variable Placeholder with default value
-#    - project[frontend,backend] # Variable Placeholder with list of values
+#description: The description of the template 
+#path: The path where the file should be generated based on the project root (you can also use placeholders here)
+#vars: # Define a variable placeholders that can be used in the file content
+#   - package # Variable Placeholder
+#   - subdir(src) # Variable Placeholder with default value
+#   - project[frontend,backend] # Variable Placeholder with list of values
+#snippets:
+#   - id: ID # This is being used to identifiy the exact location of the snippet. The content will be placed to the '~~ID~~' placeholder in the file.
+#     file: src/file.txt # The file where the snippet should be inserted
+#     content: My Content \n Second Line Content # The content of the snippet (can be used with placeholders)
+#     before: true # If the content should be inserted before the placeholder. Optional, default is false.
+#   - id: second-snippet
+#     ...
 
 # IMPORTANT: Lines starting with a . are auto generated and should not be changed.
 
