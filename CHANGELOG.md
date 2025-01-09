@@ -5,6 +5,7 @@
 ## [v2.0.0](https://github.com/cophilot/templify/tree/2.0.0) (2025-X-X) _IN DEVELOPMENT_
 
 -   Using YAML format for `.templify` (now `.templify.yml`) files [#5](https://github.com/cophilot/templify/issues/5)
+-   Generate snippets when generatng from a template [#3](https://github.com/cophilot/templify/issues/3)
 -   Added `placeholder` command [#21](https://github.com/cophilot/templify/issues/21)
 -   Supports loading templates from Gitlab repositories [#11](https://github.com/cophilot/templify/issues/11)
 -   Added warning when updating to a new major version [#6](https://github.com/cophilot/templify/issues/6)

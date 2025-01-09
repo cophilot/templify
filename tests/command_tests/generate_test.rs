@@ -182,6 +182,32 @@ pub fn test() {
         .contains_string("opt3");
     utils::run_failure("tpy generate comm test -force -var test1=foo,test2=bar,test3=opt4");
 
+    // test snipptes
+    fs::templates_dir()
+        .dir("Command")
+        .file(".templify.yml")
+        .append_line("snippets:")
+        .append_line(" -    id: snippet1")
+        .append_line("      file: src/commands/subdir/TestCommand.txt")
+        .append_line("      content: This is the snippet one content for $$name$$")
+        .append_line(" -    id: snippet2")
+        .append_line("      file: src/commands/subdir/TestCommand.txt")
+        .append_line("      content: This is the snippet two content with $$test2$$")
+        .append_line("      before: true");
+    fs::templates_dir()
+        .dir("Command")
+        .file("TestCommand.txt")
+        .append_line("// ~~snippet1~~")
+        .append_line("// ~~snippet2~~");
+
+    utils::run_successfully("tpy generate comm snippet_test -force -default-var");
+    fs::dir("src")
+        .dir("commands")
+        .dir("subdir")
+        .file("TestCommand.txt")
+        .contains_string("// ~~snippet1~~\nThis is the snippet one content for snippet_test")
+        .contains_string("This is the snippet two content with default_value\n// ~~snippet2~~");
+
     // test -reload flag
     utils::run_successfully(
         "tpy load https://github.com/cophilot/templify-vault/tree/main/Test/MyTest -t",

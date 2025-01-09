@@ -4,6 +4,7 @@ pub mod flag;
 pub mod global_flag;
 pub mod load_types;
 pub mod placeholder_definition;
+pub mod snippet;
 pub mod status;
 pub mod template_meta;
 pub mod var_placeholder;

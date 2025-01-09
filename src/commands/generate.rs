@@ -175,6 +175,8 @@ pub(crate) fn generate(command: &Command) -> Status {
         template_name.clone()
     );
 
+    meta.handle_placeholders(given_name.as_str());
+
     let mut new_path = meta.get_path();
     new_path = utils::formater::handle_placeholders(&new_path, &given_name, meta.clone());
 
@@ -191,6 +193,7 @@ pub(crate) fn generate(command: &Command) -> Status {
         meta.clone(),
         force,
     ) {
+        meta.generate_snippets();
         log!("Files generated successfully.");
         Status::ok()
     } else {
