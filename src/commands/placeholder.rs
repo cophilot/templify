@@ -12,6 +12,7 @@ pub fn definition() -> Command {
     )
 }
 
+/// Placeholder command implementation.
 pub fn placeholder(_command: &Command) -> Status {
     log!("Available placeholders:");
     for ph in get_all_placeholders() {

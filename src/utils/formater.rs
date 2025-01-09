@@ -17,6 +17,7 @@ pub(crate) fn handle_placeholders(
     s
 }
 
+/// Handle and replace the static placeholders in a template string.
 fn handle_static_placeholders(content_to_parse: &str) -> String {
     let mut s = content_to_parse.to_string();
     for ph in get_all_placeholders() {
