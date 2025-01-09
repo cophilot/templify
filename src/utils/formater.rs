@@ -1,26 +1,37 @@
-use crate::types::template_meta::TemplateMeta;
-use chrono::Datelike;
+use crate::{placeholder_storage::get_all_placeholders, types::template_meta::TemplateMeta};
 
 /// This function is used to handle the placeholders in a template string.
-pub(crate) fn handle_placeholders(s: &str, name: &str, meta: TemplateMeta) -> String {
-    let mut s = s.to_string();
+pub(crate) fn handle_placeholders(
+    content_to_parse: &str,
+    name: &str,
+    meta: TemplateMeta,
+) -> String {
+    let mut s = content_to_parse.to_string();
 
     s = s.replace("$$name$$", name);
     s = handle_case_conversion("name", name, s.as_str());
 
-    s = s.replace("$$year$$", chrono::Local::now().year().to_string().as_str());
-    s = s.replace("$$month$$", &chrono::Local::now().month().to_string());
-    s = s.replace("$$month-name$$", get_month_string().as_str());
-    s = s.replace("$$day$$", &chrono::Local::now().day().to_string());
-    s = s.replace("$$git-name$$", &crate::utils::functions::get_git_name());
+    s = handle_static_placeholders(s.as_str());
     s = handle_variable_placeholders(s.as_str(), meta);
 
     s
 }
 
+fn handle_static_placeholders(content_to_parse: &str) -> String {
+    let mut s = content_to_parse.to_string();
+    for ph in get_all_placeholders() {
+        s = s.replace(
+            format!("$${}$$", ph.name).as_str(),
+            (ph.get_value)().as_str(),
+        );
+        s = handle_case_conversion(ph.name.as_str(), (ph.get_value)().as_str(), s.as_str());
+    }
+    s
+}
+
 /// This function is used to handle the variable placeholders in a template string.
-fn handle_variable_placeholders(s: &str, meta: TemplateMeta) -> String {
-    let mut s = s.to_string();
+fn handle_variable_placeholders(content_to_parse: &str, meta: TemplateMeta) -> String {
+    let mut s = content_to_parse.to_string();
     for (_, p) in meta.var_placeholder_collection.placeholders {
         s = s.replace(format!("$${}$$", p.name).as_str(), p.value.as_str());
         s = handle_case_conversion(p.name.as_str(), p.value.as_str(), s.as_str());
@@ -154,25 +165,4 @@ fn tokenize_string(input: &str) -> Vec<String> {
         .split_whitespace()
         .map(|s| s.to_string())
         .collect();
-}
-
-/// Returns the current month as a string.
-fn get_month_string() -> String {
-    let month = chrono::Local::now().month();
-    match month {
-        1 => "Jan",
-        2 => "Feb",
-        3 => "Mar",
-        4 => "Apr",
-        5 => "May",
-        6 => "Jun",
-        7 => "Jul",
-        8 => "Aug",
-        9 => "Sep",
-        10 => "Oct",
-        11 => "Nov",
-        12 => "Dec",
-        _ => "Unknown",
-    }
-    .to_string()
 }

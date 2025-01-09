@@ -3,7 +3,7 @@ use crate::types::flag::Flag;
 use crate::types::status::Status;
 
 /// A command that can be executed by the user.
-pub(crate) struct Command {
+pub struct Command {
     pub names: Vec<String>,
     pub call: fn(&Command) -> Status,
     pub help: String,

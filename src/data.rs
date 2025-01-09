@@ -1,3 +1,5 @@
+use crate::placeholder_storage::get_all_placeholders;
+
 /// Get the content for a new templify file
 pub fn templify_file_blank(name: String, description: String, path: String) -> String {
     let content = format!("# This is the '{}' template
@@ -22,6 +24,12 @@ path: {}
 
 /// Get the content for the init README file
 pub fn get_init_readme_content() -> String {
+    let mut placeholder_string = String::new();
+
+    for ph in get_all_placeholders() {
+        placeholder_string.push_str(&format!("- `$$${}$$`: {}\n", ph.name, ph.description));
+    }
+
     let content = format!("<img src=\"https://raw.githubusercontent.com/cophilot/templify/master/assets/logo.png\" alt=\"\" width=\"30%\"/>
     
 # Welcome to templify (v{})
@@ -87,12 +95,7 @@ This will create a new file from the given template in the current project folde
 
 ## Placeholders
 
-- `$$name$$`: The name of the new file (This placeholder supports case conversion).
-- `$$year$$`: The current year.
-- `$$month$$`: The current month as a number.
-- `$$month-name$$`: The current month as a name.
-- `$$day$$`: The current day.
-- `$$git-name$$`: The name of the git user.
+{}
 
 ### Case conversion
 
@@ -114,7 +117,7 @@ You can use the following case conversion:
 ---
 
 by [Philipp B.](https://github.com/cophilot)
-", env!("CARGO_PKG_VERSION"));
-
+", env!("CARGO_PKG_VERSION")
+, placeholder_string);
     content.to_string()
 }

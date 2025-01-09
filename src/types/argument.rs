@@ -1,5 +1,5 @@
 /// A struct that represents an argument of a command
-pub(crate) struct Argument {
+pub struct Argument {
     pub name: String,
     pub at_index: usize, // the index is relative to the base command (so the first argument is 0, the second is 1, etc.)
     pub value: String,
