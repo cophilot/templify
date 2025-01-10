@@ -1,0 +1,34 @@
+name: Nightly Build
+
+on:
+    schedule:
+        - cron: '0 0 * * *'
+    workflow_dispatch:
+
+jobs:
+    build-linux:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+              with:
+                  ref: master
+
+            - name: Check if there was a commit today
+              run: |
+                  if [ "$(git log --since=yesterday --oneline)" != "" ]; then
+                      echo "No commits today. Exiting..."
+                      exit 0
+                  fi
+
+            - name: Build for linux
+              run: ./scripts/build-nightly
+
+            - name: Rename binary
+              run: mv target/release/templify tpy-linux-nightly
+
+            - name: Commit binary to nightly branch
+              run: |
+                  git config --global user.name "GitHub Actions"
+                  git checkout -b nightly
+                  git add tpy-linux-nightly
+                  git commit -m "Nightly build"
