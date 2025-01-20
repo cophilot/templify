@@ -6,6 +6,12 @@ use crate::types::status::Status;
 use crate::{types, utils};
 use std::io::Write;
 
+pub struct FileToCreate {
+    pub path: String,
+    pub is_dir: bool,
+    pub file_content: String,
+}
+
 /// The definition of the generate command.
 pub(crate) fn definition() -> Command {
     let mut generate_command = Command::new(
@@ -183,6 +189,8 @@ pub(crate) fn generate(command: &Command) -> Status {
         std::fs::create_dir_all(&new_path).unwrap();
     }
 
+    let mut files_to_create: Vec<FileToCreate> = Vec::new();
+
     if utils::template_handler::generate_template_dir(
         &format!(".templates/{}", template_name),
         &new_path,
@@ -190,7 +198,37 @@ pub(crate) fn generate(command: &Command) -> Status {
         dry_run,
         meta.clone(),
         force,
+        &mut files_to_create,
     ) {
+        for file in files_to_create {
+            if dry_run {
+                log!("Would create file {}", file.path);
+                continue;
+            }
+            if file.is_dir {
+                std::fs::create_dir_all(&file.path).unwrap();
+            } else {
+                if Path::new(&file.path).exists() {
+                    if force {
+                        if !dry_run {
+                            std::fs::remove_file(&file.path).unwrap();
+                        }
+                    } else {
+                        log!("File {} already exists.", new_path);
+                    }
+                }
+                let mut new_file = std::fs::File::create(&file.path).unwrap();
+                new_file.write_all(file.file_content.as_bytes()).unwrap();
+                let abs_path = std::fs::canonicalize(&file.path).unwrap();
+                
+                log!("Created file {}", abs_path.to_str().unwrap());
+            }
+        }
+        
+        if !dry_run {
+            log!("Files would be generated successfully.");
+            return Status::ok();
+        }
         log!("Files generated successfully.");
         Status::ok()
     } else {

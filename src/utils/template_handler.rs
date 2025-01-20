@@ -1,3 +1,5 @@
+use super::rest;
+use crate::commands::generate::FileToCreate;
 use crate::log;
 use crate::types::load_types::URLType;
 use crate::types::status::Status;
@@ -7,8 +9,6 @@ use base64::{engine::general_purpose::STANDARD, Engine as _};
 use regex::Regex;
 use std::io::Write;
 use std::path::Path;
-
-use super::rest;
 
 /// Parse the template name and check if it exists (template_name is modified in place)
 pub(crate) fn parse_template_name(name: &mut String, strict: bool) -> Status {
@@ -536,6 +536,7 @@ pub(crate) fn generate_template_dir(
     dry_run: bool,
     meta: TemplateMeta,
     force: bool,
+    files_to_create: &mut Vec<FileToCreate>,
 ) -> bool {
     let paths = std::fs::read_dir(path).unwrap();
     let files_to_ignore = [
@@ -559,7 +560,12 @@ pub(crate) fn generate_template_dir(
 
         if path.is_dir() {
             if !dry_run {
-                std::fs::create_dir_all(&new_path).unwrap();
+                files_to_create.push(FileToCreate {
+                    file_content: "".to_string(),
+                    is_dir: true,
+                    path: new_path.clone(),
+                });
+                // std::fs::create_dir_all(&new_path).unwrap();
             }
             if !generate_template_dir(
                 path.to_str().unwrap(),
@@ -568,6 +574,7 @@ pub(crate) fn generate_template_dir(
                 dry_run,
                 meta,
                 force,
+                files_to_create,
             ) {
                 return false;
             }
@@ -578,6 +585,7 @@ pub(crate) fn generate_template_dir(
             dry_run,
             meta,
             force,
+            files_to_create,
         ) {
             return false;
         }
@@ -593,32 +601,38 @@ pub(crate) fn generate_template_file(
     dry_run: bool,
     meta: TemplateMeta,
     force: bool,
+    files_to_create: &mut Vec<FileToCreate>,
 ) -> bool {
     let file_content = std::fs::read_to_string(path).unwrap();
     let file_content = formater::handle_placeholders(&file_content, given_name, meta);
 
-    if Path::new(new_path).exists() {
-        if force {
-            if !dry_run {
-                std::fs::remove_file(new_path).unwrap();
-            }
-        } else {
-            log!("File {} already exists.", new_path);
-            return false;
-        }
-    }
+    // if Path::new(new_path).exists() {
+    //     if force {
+    //         if !dry_run {
+    //             std::fs::remove_file(new_path).unwrap();
+    //         }
+    //     } else {
+    //         log!("File {} already exists.", new_path);
+    //         return false;
+    //     }
+    // }
 
     if dry_run {
         log!("Would create file {}", new_path);
         return true;
     }
 
-    let mut new_file = std::fs::File::create(new_path).unwrap();
-    new_file.write_all(file_content.as_bytes()).unwrap();
-
-    let abs_path = std::fs::canonicalize(new_path).unwrap();
-
-    log!("Created file {}", abs_path.to_str().unwrap());
+    files_to_create.push(FileToCreate {
+        file_content,
+        is_dir: true,
+        path: new_path.to_string(),
+    });
+    // let mut new_file = std::fs::File::create(new_path).unwrap();
+    // new_file.write_all(file_content.as_bytes()).unwrap();
+    //
+    // let abs_path = std::fs::canonicalize(new_path).unwrap();
+    //
+    // log!("Created file {}", abs_path.to_str().unwrap());
     true
 }
 
