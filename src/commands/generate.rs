@@ -185,6 +185,8 @@ pub(crate) fn generate(command: &Command) -> Status {
         std::fs::create_dir_all(&new_path).unwrap();
     }
 
+    let mut created_files: Vec<(String, bool)> = Vec::new();
+
     if utils::template_handler::generate_template_dir(
         &format!(".templates/{}", template_name),
         &new_path,
@@ -192,11 +194,22 @@ pub(crate) fn generate(command: &Command) -> Status {
         dry_run,
         meta.clone(),
         force,
+        &mut created_files,
     ) {
         meta.generate_snippets();
         log!("Files generated successfully.");
         Status::ok()
     } else {
+        for (path, is_dir) in created_files {
+            log!("Cleaning up: {}", path);
+            if std::fs::metadata(&path).is_ok() {
+                if is_dir {
+                    std::fs::remove_dir_all(&path).unwrap();
+                } else {
+                    std::fs::remove_file(&path).unwrap();
+                }
+            }
+        }
         Status::error("Files could not be generated.".to_string())
     }
 }

@@ -536,6 +536,7 @@ pub(crate) fn generate_template_dir(
     dry_run: bool,
     meta: TemplateMeta,
     force: bool,
+    created_files: &mut Vec<(String, bool)>,
 ) -> bool {
     let paths = std::fs::read_dir(path).unwrap();
     let files_to_ignore = [
@@ -559,6 +560,9 @@ pub(crate) fn generate_template_dir(
 
         if path.is_dir() {
             if !dry_run {
+                if !Path::new(&new_path).exists() || force {
+                    created_files.push((new_path.clone(), true));
+                }
                 std::fs::create_dir_all(&new_path).unwrap();
             }
             if !generate_template_dir(
@@ -568,6 +572,7 @@ pub(crate) fn generate_template_dir(
                 dry_run,
                 meta,
                 force,
+                created_files,
             ) {
                 return false;
             }
@@ -578,6 +583,7 @@ pub(crate) fn generate_template_dir(
             dry_run,
             meta,
             force,
+            created_files,
         ) {
             return false;
         }
@@ -593,6 +599,7 @@ pub(crate) fn generate_template_file(
     dry_run: bool,
     meta: TemplateMeta,
     force: bool,
+    created_files: &mut Vec<(String, bool)>,
 ) -> bool {
     let file_content = std::fs::read_to_string(path).unwrap();
     let file_content = formater::handle_placeholders(&file_content, given_name, meta);
@@ -614,6 +621,7 @@ pub(crate) fn generate_template_file(
     }
 
     let mut new_file = std::fs::File::create(new_path).unwrap();
+    created_files.push((new_path.to_string(), false));
     new_file.write_all(file_content.as_bytes()).unwrap();
 
     let abs_path = std::fs::canonicalize(new_path).unwrap();
