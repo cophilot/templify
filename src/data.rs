@@ -15,7 +15,7 @@ pub fn templify_file_blank(name: String, description: String, path: String) -> S
 #snippets:
 #   - id: ID # This is being used to identifiy the exact location of the snippet. The content will be placed to the '~~ID~~' placeholder in the file.
 #     file: src/file.txt # The file where the snippet should be inserted
-#     content: My Content \n Second Line Content # The content of the snippet (can be used with placeholders)
+#     content: My Content\\nSecond Line Content # The content of the snippet (can be used with placeholders)
 #     before: true # If the content should be inserted before the placeholder. Optional, default is false.
 #   - id: second-snippet
 #     ...
