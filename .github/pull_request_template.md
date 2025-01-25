@@ -1,8 +1,16 @@
+**Set `dev` as target branch for this pull request!**
+
 Replace the `...` with your own content!
+
+## Linked Issue
+
+Issue: #...
 
 ## Type of change
 
-_Please select the relevant option:_
+> Can be skipped if a link to an issue is provided above.
+
+Please select the relevant option:
 
 -   [ ] Bug fix
 -   [ ] New feature
@@ -13,13 +21,21 @@ _Please select the relevant option:_
 
 ## Description
 
-_Please provide a brief description of the changes made in this pull request:_
+> Can be skipped if a link to an issue is provided above.
+
+Please provide a brief description of the changes made in this pull request:
 
 ...
 
 ## Changes
 
-_Please add a list of changes made in this pull request:_
+Please add a list of changes made in this pull request:
 
 -   ...
 -   ...
+
+## Notes
+
+Please add any additional notes here:
+
+...
