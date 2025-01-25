@@ -1,17 +1,18 @@
 use crate::types::status::Status;
 use crate::types::var_placeholder::VarPlaceholder;
+use indexmap::IndexMap;
 
 #[derive(Clone)]
 /// A collection of variable placeholders.
 pub(crate) struct VarPlaceholderCollection {
-    pub placeholders: std::collections::HashMap<String, VarPlaceholder>,
+    pub placeholders: IndexMap<String, VarPlaceholder>,
 }
 
 impl VarPlaceholderCollection {
     /// Create a new empty VarPlaceholderCollection.
     pub fn new() -> VarPlaceholderCollection {
         VarPlaceholderCollection {
-            placeholders: std::collections::HashMap::new(),
+            placeholders: IndexMap::new(),
         }
     }
 
