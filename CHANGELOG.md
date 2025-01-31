@@ -2,7 +2,7 @@
 
 ---
 
-## [v2.0.0](https://github.com/cophilot/templify/tree/2.0.0) (2025-X-X) _IN DEVELOPMENT_
+## [v2.0.0](https://github.com/cophilot/templify/milestone/1) (2025-1-31)
 
 -   Bug fixes [#18](https://github.com/cophilot/templify/issues/18)
 -   Using YAML format for `.templify` (now `.templify.yml`) files [#5](https://github.com/cophilot/templify/issues/5)

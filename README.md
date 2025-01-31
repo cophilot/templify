@@ -283,23 +283,14 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-### [v1.0.0](https://github.com/cophilot/templify/tree/1.0.0)
+## [v2.0.0](https://github.com/cophilot/templify/milestone/1)
 
--   Refactoring
--   Added variable placeholders
--   Added `-reset` flag for the `reload` command
--   Added `-force` flag for the `generate` command
--   Added `-reload` flag for the `generate` command
--   Added `-var` flag for the `generate` command
--   Added `-default-var` flag for the `generate` command
--   Short forms for case conversion
--   Added divider selection support in the `.templify.yml` file
--   Added global flag support
--   Added `--quiet` global flag
--   Added `--dev` global flag
--   Added `--log-file` global flag
--   Initialize test suite
--   CI pipeline for code quality checks
+-   Bug fixes [#18](https://github.com/cophilot/templify/issues/18)
+-   Using YAML format for `.templify` (now `.templify.yml`) files [#5](https://github.com/cophilot/templify/issues/5)
+-   Generate snippets when generatng from a template [#3](https://github.com/cophilot/templify/issues/3)
+-   Added `placeholder` command [#21](https://github.com/cophilot/templify/issues/21)
+-   Supports loading templates from Gitlab repositories [#11](https://github.com/cophilot/templify/issues/11)
+-   Added warning when updating to a new major version [#6](https://github.com/cophilot/templify/issues/6)
 
 ---
 
