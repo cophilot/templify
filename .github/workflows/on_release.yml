@@ -40,9 +40,9 @@ jobs:
               uses: ncipollo/release-action@v1
               with:
                   artifacts: |
-                      uploads/tpy.exe
-                      uploads/tpy-linux
-                      uploads/tpy-macos
+                      tpy.exe
+                      tpy-linux
+                      tpy-macos
                   token: ${{ secrets.GITHUB_TOKEN }}
                   body: ${{ steps.changelog_reader.outputs.changes }}
 
@@ -63,7 +63,7 @@ jobs:
             - name: upload linux artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: uploads-linux
+                  name: tpy-linux
                   path: tpy-linux
 
     build-macos:
@@ -83,7 +83,7 @@ jobs:
             - name: upload macos artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: uploads-macos
+                  name: tpy-macos
                   path: tpy-macos
 
     build-windows:
@@ -103,5 +103,5 @@ jobs:
             - name: upload windows artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: uploads-windows
+                  name: tpy.exe
                   path: tpy.exe
