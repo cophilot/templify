@@ -26,6 +26,7 @@ jobs:
               uses: actions/download-artifact@v4.1.7
               with:
                   name: uploads
+
             - name: Get Changelog Entry
               id: changelog_reader
               uses: mindsers/changelog-reader-action@v2
@@ -61,7 +62,7 @@ jobs:
             - name: upload linux artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: uploads
+                  name: uploads-linux
                   path: tpy-linux
 
     build-macos:
@@ -78,10 +79,10 @@ jobs:
             - name: Rename binary
               run: mv target/release/templify tpy-macos
 
-            - name: upload linux artifact
+            - name: upload macos artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: uploads
+                  name: uploads-macos
                   path: tpy-macos
 
     build-windows:
@@ -98,8 +99,8 @@ jobs:
             - name: Rename binary
               run: mv target/release/templify.exe tpy.exe
 
-            - name: upload linux artifact
+            - name: upload windows artifact
               uses: actions/upload-artifact@v4
               with:
-                  name: uploads
+                  name: uploads-windows
                   path: tpy.exe
