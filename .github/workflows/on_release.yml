@@ -59,7 +59,7 @@ jobs:
               run: mv target/release/templify tpy-linux
 
             - name: upload linux artifact
-              uses: actions/upload-artifact@v1
+              uses: actions/upload-artifact@v4
               with:
                   name: uploads
                   path: tpy-linux
@@ -79,7 +79,7 @@ jobs:
               run: mv target/release/templify tpy-macos
 
             - name: upload linux artifact
-              uses: actions/upload-artifact@v1
+              uses: actions/upload-artifact@v4
               with:
                   name: uploads
                   path: tpy-macos
@@ -99,7 +99,7 @@ jobs:
               run: mv target/release/templify.exe tpy.exe
 
             - name: upload linux artifact
-              uses: actions/upload-artifact@v1
+              uses: actions/upload-artifact@v4
               with:
                   name: uploads
                   path: tpy.exe
