@@ -22,10 +22,11 @@ jobs:
               with:
                   ref: master
 
-            - name: download artifacts
-              uses: actions/download-artifact@v4.1.7
-              with:
-                  name: uploads
+            - name: download all artifacts
+              uses: actions/download-artifact@v4
+
+            - name: List artifacts
+              run: ls -la
 
             - name: Get Changelog Entry
               id: changelog_reader
