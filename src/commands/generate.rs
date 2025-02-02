@@ -5,11 +5,12 @@ use crate::types::flag::Flag;
 use crate::types::status::Status;
 use crate::{types, utils};
 use std::io::Write;
+use std::path::Path;
 
 pub struct FileToCreate {
     pub path: String,
     pub is_dir: bool,
-    pub file_content: String,
+    pub file_content: Option<String>,
 }
 
 /// The definition of the generate command.
@@ -208,23 +209,18 @@ pub(crate) fn generate(command: &Command) -> Status {
             if file.is_dir {
                 std::fs::create_dir_all(&file.path).unwrap();
             } else {
-                if Path::new(&file.path).exists() {
-                    if force {
-                        if !dry_run {
-                            std::fs::remove_file(&file.path).unwrap();
-                        }
-                    } else {
-                        log!("File {} already exists.", new_path);
-                    }
-                }
                 let mut new_file = std::fs::File::create(&file.path).unwrap();
-                new_file.write_all(file.file_content.as_bytes()).unwrap();
+                match file.file_content {
+                    Some(val) => new_file.write_all(val.as_bytes()).unwrap(),
+                    None => {}
+                }
+
                 let abs_path = std::fs::canonicalize(&file.path).unwrap();
-                
+
                 log!("Created file {}", abs_path.to_str().unwrap());
             }
         }
-        
+
         if !dry_run {
             log!("Files would be generated successfully.");
             return Status::ok();
