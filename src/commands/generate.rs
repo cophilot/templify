@@ -198,10 +198,6 @@ pub(crate) fn generate(command: &Command) -> Status {
         &mut files_to_create,
     ) {
         for file in files_to_create {
-            if dry_run {
-                log!("Would create file {}", file.path);
-                continue;
-            }
             if file.is_dir {
                 std::fs::create_dir_all(&file.path).unwrap();
             } else {
