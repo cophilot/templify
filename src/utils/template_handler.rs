@@ -565,7 +565,6 @@ pub(crate) fn generate_template_dir(
                     is_dir: true,
                     path: new_path.clone(),
                 });
-                // std::fs::create_dir_all(&new_path).unwrap();
             }
             if !generate_template_dir(
                 path.to_str().unwrap(),

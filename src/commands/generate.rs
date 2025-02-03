@@ -210,9 +210,8 @@ pub(crate) fn generate(command: &Command) -> Status {
                 std::fs::create_dir_all(&file.path).unwrap();
             } else {
                 let mut new_file = std::fs::File::create(&file.path).unwrap();
-                match file.file_content {
-                    Some(val) => new_file.write_all(val.as_bytes()).unwrap(),
-                    None => {}
+                if let Some(val) = file.file_content {
+                    new_file.write_all(val.as_bytes()).unwrap();
                 }
 
                 let abs_path = std::fs::canonicalize(&file.path).unwrap();
@@ -221,7 +220,7 @@ pub(crate) fn generate(command: &Command) -> Status {
             }
         }
 
-        if !dry_run {
+        if dry_run {
             log!("Files would be generated successfully.");
             return Status::ok();
         }
