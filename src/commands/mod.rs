@@ -5,6 +5,7 @@ pub mod init;
 pub mod list;
 pub mod load;
 pub mod new;
+pub mod placeholder;
 pub mod reload;
 pub mod update;
 pub mod version;

@@ -22,10 +22,15 @@ jobs:
               with:
                   ref: master
 
-            - name: download artifacts
-              uses: actions/download-artifact@v4.1.7
-              with:
-                  name: uploads
+            - name: download all artifacts
+              uses: actions/download-artifact@v4
+
+            - name: List artifacts
+              run: ls -la
+
+            - name: List windows dir
+              run: ls -la windows
+
             - name: Get Changelog Entry
               id: changelog_reader
               uses: mindsers/changelog-reader-action@v2
@@ -38,9 +43,9 @@ jobs:
               uses: ncipollo/release-action@v1
               with:
                   artifacts: |
-                      uploads/tpy.exe
-                      uploads/tpy-linux
-                      uploads/tpy-macos
+                      windows/tpy.exe
+                      linux/tpy-linux
+                      macos/tpy-macos
                   token: ${{ secrets.GITHUB_TOKEN }}
                   body: ${{ steps.changelog_reader.outputs.changes }}
 
@@ -59,9 +64,9 @@ jobs:
               run: mv target/release/templify tpy-linux
 
             - name: upload linux artifact
-              uses: actions/upload-artifact@v1
+              uses: actions/upload-artifact@v4
               with:
-                  name: uploads
+                  name: linux
                   path: tpy-linux
 
     build-macos:
@@ -78,10 +83,10 @@ jobs:
             - name: Rename binary
               run: mv target/release/templify tpy-macos
 
-            - name: upload linux artifact
-              uses: actions/upload-artifact@v1
+            - name: upload macos artifact
+              uses: actions/upload-artifact@v4
               with:
-                  name: uploads
+                  name: macos
                   path: tpy-macos
 
     build-windows:
@@ -98,8 +103,8 @@ jobs:
             - name: Rename binary
               run: mv target/release/templify.exe tpy.exe
 
-            - name: upload linux artifact
-              uses: actions/upload-artifact@v1
+            - name: upload windows artifact
+              uses: actions/upload-artifact@v4
               with:
-                  name: uploads
+                  name: windows
                   path: tpy.exe

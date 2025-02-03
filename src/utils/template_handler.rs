@@ -626,7 +626,7 @@ pub(crate) fn generate_template_file(
         is_dir: false,
         path: new_path.to_string(),
     });
-    
+
     true
 }
 

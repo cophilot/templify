@@ -1,5 +1,5 @@
 /// A simple struct to represent the status
-pub(crate) struct Status {
+pub struct Status {
     pub is_ok: bool,
     pub message: String,
 }

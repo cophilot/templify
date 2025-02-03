@@ -1,15 +1,24 @@
+use crate::placeholder_storage::get_all_placeholders;
+
 /// Get the content for a new templify file
 pub fn templify_file_blank(name: String, description: String, path: String) -> String {
     let content = format!("# This is the '{}' template
 # This file is used by templify to generate new files from this template.
 # You can use the following variables in this file:
 
-# description: The description of the template 
-# path: The path where the file should be generated based on the project root (you can also use placeholders here)
-# vars: # Define a variable placeholders that can be used in the file content
-#    - package # Variable Placeholder
-#    - subdir(src) # Variable Placeholder with default value
-#    - project[frontend,backend] # Variable Placeholder with list of values
+#description: The description of the template 
+#path: The path where the file should be generated based on the project root (you can also use placeholders here)
+#vars: # Define a variable placeholders that can be used in the file content
+#   - package # Variable Placeholder
+#   - subdir(src) # Variable Placeholder with default value
+#   - project[frontend,backend] # Variable Placeholder with list of values
+#snippets:
+#   - id: ID # This is being used to identifiy the exact location of the snippet. The content will be placed to the '~~ID~~' placeholder in the file.
+#     file: src/file.txt # The file where the snippet should be inserted
+#     content: My Content\\nSecond Line Content # The content of the snippet (can be used with placeholders)
+#     before: true # If the content should be inserted before the placeholder. Optional, default is false.
+#   - id: second-snippet
+#     ...
 
 # IMPORTANT: Lines starting with a . are auto generated and should not be changed.
 
@@ -22,6 +31,12 @@ path: {}
 
 /// Get the content for the init README file
 pub fn get_init_readme_content() -> String {
+    let mut placeholder_string = String::new();
+
+    for ph in get_all_placeholders() {
+        placeholder_string.push_str(&format!("- `$$${}$$`: {}\n", ph.name, ph.description));
+    }
+
     let content = format!("<img src=\"https://raw.githubusercontent.com/cophilot/templify/master/assets/logo.png\" alt=\"\" width=\"30%\"/>
     
 # Welcome to templify (v{})
@@ -87,12 +102,7 @@ This will create a new file from the given template in the current project folde
 
 ## Placeholders
 
-- `$$name$$`: The name of the new file (This placeholder supports case conversion).
-- `$$year$$`: The current year.
-- `$$month$$`: The current month as a number.
-- `$$month-name$$`: The current month as a name.
-- `$$day$$`: The current day.
-- `$$git-name$$`: The name of the git user.
+{}
 
 ### Case conversion
 
@@ -114,7 +124,7 @@ You can use the following case conversion:
 ---
 
 by [Philipp B.](https://github.com/cophilot)
-", env!("CARGO_PKG_VERSION"));
-
+", env!("CARGO_PKG_VERSION")
+, placeholder_string);
     content.to_string()
 }
