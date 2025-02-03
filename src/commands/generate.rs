@@ -2,16 +2,10 @@ use crate::log;
 use crate::types::argument::Argument;
 use crate::types::command::Command;
 use crate::types::flag::Flag;
+use crate::types::generate_types::FileToCreate;
 use crate::types::status::Status;
 use crate::{types, utils};
 use std::io::Write;
-use std::path::Path;
-
-pub struct FileToCreate {
-    pub path: String,
-    pub is_dir: bool,
-    pub file_content: Option<String>,
-}
 
 /// The definition of the generate command.
 pub(crate) fn definition() -> Command {

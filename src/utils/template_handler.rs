@@ -1,6 +1,6 @@
 use super::rest;
-use crate::commands::generate::FileToCreate;
 use crate::log;
+use crate::types::generate_types::FileToCreate;
 use crate::types::load_types::URLType;
 use crate::types::status::Status;
 use crate::types::template_meta::TemplateMeta;
