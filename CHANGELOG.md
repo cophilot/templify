@@ -2,6 +2,12 @@
 
 ---
 
+## [v2.0.1](https://github.com/cophilot/templify/milestone/2) _IN DEVELOPMENT_
+
+-   Bug fixes [#20](https://github.com/cophilot/templify/issues/20)
+
+---
+
 ## [v2.0.0](https://github.com/cophilot/templify/milestone/1) (2025-1-31)
 
 -   Bug fixes [#18](https://github.com/cophilot/templify/issues/18)
