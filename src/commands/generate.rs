@@ -185,7 +185,7 @@ pub(crate) fn generate(command: &Command) -> Status {
         std::fs::create_dir_all(&new_path).unwrap();
     }
 
-    if utils::template_handler::generate_template_dir(
+    if utils::template_handler::generate_template(
         &format!(".templates/{}", template_name),
         &new_path,
         given_name.as_str(),
@@ -193,6 +193,10 @@ pub(crate) fn generate(command: &Command) -> Status {
         meta.clone(),
         force,
     ) {
+        if dry_run {
+            log!("Files would be generated successfully.");
+            return Status::ok();
+        }
         meta.generate_snippets();
         log!("Files generated successfully.");
         Status::ok()
