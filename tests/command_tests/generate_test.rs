@@ -219,6 +219,22 @@ pub fn test() {
         .check_not_exists();
     utils::run_successfully("tpy generate MyTest test -reload");
     fs::dir("src").file("file.txt").check_all_exists();
+
+    fs::templates_dir().dir("MyTest").file("file.txt").remove();
+    fs::templates_dir()
+        .dir("MyTest")
+        .file(".templify.yml")
+        .create();
+    fs::templates_dir().dir("MyTest").file("test.txt").create();
+    fs::templates_dir()
+        .dir("MyTest")
+        .file("$$name$$.txt")
+        .create();
+
+    utils::run_successfully("tpy generate MyTest test1");
+    utils::run_failure("tpy generate MyTest test2");
+    log::contains_line("File ./test.txt already exists.");
+    fs::file("test2.txt").check_not_exists();
 }
 
 fn check_case_conversion_generated_file(file: &mut FSItem) {

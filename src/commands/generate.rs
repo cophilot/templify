@@ -2,7 +2,6 @@ use crate::log;
 use crate::types::argument::Argument;
 use crate::types::command::Command;
 use crate::types::flag::Flag;
-use crate::types::generate_types::FileToCreate;
 use crate::types::status::Status;
 use crate::{types, utils};
 use std::io::Write;
@@ -186,32 +185,14 @@ pub(crate) fn generate(command: &Command) -> Status {
         std::fs::create_dir_all(&new_path).unwrap();
     }
 
-    let mut files_to_create: Vec<FileToCreate> = Vec::new();
-
-    if utils::template_handler::generate_template_dir(
+    if utils::template_handler::generate_template(
         &format!(".templates/{}", template_name),
         &new_path,
         given_name.as_str(),
         dry_run,
         meta.clone(),
         force,
-        &mut files_to_create,
     ) {
-        for file in files_to_create {
-            if file.is_dir {
-                std::fs::create_dir_all(&file.path).unwrap();
-            } else {
-                let mut new_file = std::fs::File::create(&file.path).unwrap();
-                if let Some(val) = file.file_content {
-                    new_file.write_all(val.as_bytes()).unwrap();
-                }
-
-                let abs_path = std::fs::canonicalize(&file.path).unwrap();
-
-                log!("Created file {}", abs_path.to_str().unwrap());
-            }
-        }
-
         if dry_run {
             log!("Files would be generated successfully.");
             return Status::ok();

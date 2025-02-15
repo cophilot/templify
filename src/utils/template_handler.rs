@@ -527,8 +527,47 @@ fn load_remote_gitlab_template_file(path: &str, url: &str, force: bool) -> Statu
     log!("Created file {}", path);
     Status::ok()
 }
+/// Generate a template directory from a template
+pub(crate) fn generate_template(
+    path: &str,
+    new_path: &str,
+    given_name: &str,
+    dry_run: bool,
+    meta: TemplateMeta,
+    force: bool,
+) -> bool {
+    let mut files_to_create: Vec<FileToCreate> = Vec::new();
 
-/// Generate a template from a template
+    if !generate_template_dir(
+        path,
+        new_path,
+        given_name,
+        dry_run,
+        meta,
+        force,
+        &mut files_to_create,
+    ) {
+        return false;
+    }
+
+    for file in files_to_create {
+        if file.is_dir {
+            std::fs::create_dir_all(&file.path).unwrap();
+        } else {
+            let mut new_file = std::fs::File::create(&file.path).unwrap();
+            if let Some(val) = &file.file_content {
+                new_file.write_all(val.as_bytes()).unwrap();
+            }
+
+            let abs_path = std::fs::canonicalize(&file.path).unwrap();
+
+            log!("Created file {}", abs_path.to_str().unwrap());
+        }
+    }
+
+    true
+}
+/// Generate a template directory from a template
 pub(crate) fn generate_template_dir(
     path: &str,
     new_path: &str,
@@ -589,6 +628,7 @@ pub(crate) fn generate_template_dir(
             return false;
         }
     }
+
     true
 }
 
