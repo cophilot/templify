@@ -527,7 +527,7 @@ fn load_remote_gitlab_template_file(path: &str, url: &str, force: bool) -> Statu
     log!("Created file {}", path);
     Status::ok()
 }
-/// Generate a template directory from a template
+/// Generate a template files and directory from a template
 pub(crate) fn generate_template(
     path: &str,
     new_path: &str,
