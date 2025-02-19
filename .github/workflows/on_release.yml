@@ -47,7 +47,9 @@ jobs:
                       linux/tpy-linux
                       macos/tpy-macos
                   token: ${{ secrets.GITHUB_TOKEN }}
-                  body: ${{ steps.changelog_reader.outputs.changes }}
+                  body: |
+                      ${{ format('{0}
+                      Special thanks to all [contributors](https://templify.philipp-bonin.com/#/contributors)!', steps.changelog_reader.outputs.changes) }}
 
     build-linux:
         runs-on: ubuntu-latest
