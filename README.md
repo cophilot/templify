@@ -283,14 +283,9 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-## [v2.0.0](https://github.com/cophilot/templify/milestone/1)
+## [v2.0.1](https://github.com/cophilot/templify/milestone/2)
 
--   Bug fixes [#18](https://github.com/cophilot/templify/issues/18)
--   Using YAML format for `.templify` (now `.templify.yml`) files [#5](https://github.com/cophilot/templify/issues/5)
--   Generate snippets when generatng from a template [#3](https://github.com/cophilot/templify/issues/3)
--   Added `placeholder` command [#21](https://github.com/cophilot/templify/issues/21)
--   Supports loading templates from Gitlab repositories [#11](https://github.com/cophilot/templify/issues/11)
--   Added warning when updating to a new major version [#6](https://github.com/cophilot/templify/issues/6)
+-   Bug fixes [#20](https://github.com/cophilot/templify/issues/20)
 
 ---
 
