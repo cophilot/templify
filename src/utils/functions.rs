@@ -1,5 +1,7 @@
 use crate::{logger, types::status::Status};
 use std::{io::Write, path::Path};
+use std::io::{Error, ErrorKind};
+use std::process::Command;
 
 /// Check if templify is initialized in the current project
 pub(crate) fn check_if_templify_initialized() -> Status {
@@ -99,4 +101,26 @@ pub(crate) fn handle_log_file(file: String) -> Status {
 
     logger::add_logger_entity_closure("file-log".to_string(), file_logger, file_logger_error);
     Status::ok()
+}
+
+pub fn execute_user_command(command: String) -> Result<String, std::io::Error> {
+    let (shell, flag) = if cfg!(target_os = "windows") {
+        ("cmd.exe", "/C")
+    } else {
+        ("sh", "-c")
+    };
+
+    let output = Command::new(shell).arg(flag).arg(command).output()?;
+
+    if !output.status.success() {
+        let exit_code = output.status.code().unwrap_or(-1);
+        let stderr = String::from_utf8_lossy(&output.stderr);
+        return Err(Error::new(
+            ErrorKind::Other,
+            format!("Command failed with exit code {}: {}", exit_code, stderr),
+        ));
+    }
+
+    String::from_utf8(output.stdout)
+        .map_err(|e| Error::new(ErrorKind::InvalidData, e.to_string()))
 }
