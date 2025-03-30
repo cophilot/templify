@@ -55,16 +55,15 @@ impl Flag {
                         return Status::error(format!("Missing value for flag: -{}", name));
                     }
 
-                    let mut v = String::new();
-                    let mut quote_char: Option<char> = None;
                     let mut j = i + 1;
                     let first_val = &args[j];
 
                     if first_val.starts_with('-') {
                         return Status::error(format!("Missing value for flag: -{}", name));
                     }
+                    let mut v;
                     if first_val.starts_with('\'') || first_val.starts_with('"') {
-                        quote_char = first_val.chars().next();
+                        let quote_char = first_val.chars().next();
                         v = first_val[1..].to_string(); // Skip opening quote
                         v.push(' ');
                         j += 1;
