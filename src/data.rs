@@ -1,5 +1,10 @@
 /// Get the content for a new templify file
-pub fn templify_file_blank(name: String, description: String, path: String) -> String {
+pub fn templify_file_blank(
+    name: String,
+    description: String,
+    path: String,
+    command: String,
+) -> String {
     let content = format!("# This is the '{}' template
 # This file is used by templify to generate new files from this template.
 # You can use the following variables in this file:
@@ -15,7 +20,8 @@ pub fn templify_file_blank(name: String, description: String, path: String) -> S
 
 description: {}
 path: {}
-", name, description, path);
+command: {}
+", name, description, path,command);
 
     content.to_string()
 }
