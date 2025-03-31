@@ -175,6 +175,8 @@ pub(crate) fn generate(command: &Command) -> Status {
         template_name.clone()
     );
 
+    meta.handle_placeholders(given_name.as_str());
+
     let mut new_path = meta.get_path();
     new_path = utils::formater::handle_placeholders(&new_path, &given_name, meta.clone());
 
@@ -186,7 +188,7 @@ pub(crate) fn generate(command: &Command) -> Status {
     let command =
         utils::formater::handle_placeholders(&meta.get_command(), &given_name, meta.clone());
 
-    if utils::template_handler::generate_template_dir(
+    if utils::template_handler::generate_template(
         &format!(".templates/{}", template_name),
         &new_path,
         given_name.as_str(),
@@ -194,6 +196,11 @@ pub(crate) fn generate(command: &Command) -> Status {
         meta.clone(),
         force,
     ) {
+        if dry_run {
+            log!("Files would be generated successfully.");
+            return Status::ok();
+        }
+        meta.generate_snippets();
         log!("Files generated successfully.");
 
         if !command.trim().is_empty() {

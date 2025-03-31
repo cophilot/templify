@@ -1,4 +1,5 @@
 use crate::{logger, types::status::Status};
+use chrono::Datelike;
 use std::io::{Error, ErrorKind};
 use std::process::Command;
 use std::{io::Write, path::Path};
@@ -41,6 +42,27 @@ pub fn get_git_name() -> String {
         name = "unknown".to_string();
     }
     name
+}
+
+/// Returns the current month as a string.
+pub fn get_month_string() -> String {
+    let month = chrono::Local::now().month();
+    match month {
+        1 => "Jan",
+        2 => "Feb",
+        3 => "Mar",
+        4 => "Apr",
+        5 => "May",
+        6 => "Jun",
+        7 => "Jul",
+        8 => "Aug",
+        9 => "Sep",
+        10 => "Oct",
+        11 => "Nov",
+        12 => "Dec",
+        _ => "Unknown",
+    }
+    .to_string()
 }
 
 /// Prepare the dev mode

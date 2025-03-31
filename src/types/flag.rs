@@ -1,7 +1,7 @@
 use crate::types::status::Status;
 
 /// A flag that can be used with a command.
-pub(crate) struct Flag {
+pub struct Flag {
     pub names: Vec<String>,
     pub value: String,
     pub is_bool: bool,

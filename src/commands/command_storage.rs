@@ -12,6 +12,7 @@ pub(crate) fn get_all_commands() -> Vec<Command> {
         crate::commands::update::definition(),
         crate::commands::init::definition(),
         crate::commands::new::definition(),
+        crate::commands::placeholder::definition(),
         crate::commands::load::definition(),
         crate::commands::reload::definition(),
         crate::commands::generate::definition(),

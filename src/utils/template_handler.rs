@@ -1,4 +1,6 @@
+use super::rest;
 use crate::log;
+use crate::types::generate_types::FileToCreate;
 use crate::types::load_types::URLType;
 use crate::types::status::Status;
 use crate::types::template_meta::TemplateMeta;
@@ -7,8 +9,6 @@ use base64::{engine::general_purpose::STANDARD, Engine as _};
 use regex::Regex;
 use std::io::Write;
 use std::path::Path;
-
-use super::rest;
 
 /// Parse the template name and check if it exists (template_name is modified in place)
 pub(crate) fn parse_template_name(name: &mut String, strict: bool) -> Status {
@@ -527,8 +527,47 @@ fn load_remote_gitlab_template_file(path: &str, url: &str, force: bool) -> Statu
     log!("Created file {}", path);
     Status::ok()
 }
+/// Generate a template files and directory from a template
+pub(crate) fn generate_template(
+    path: &str,
+    new_path: &str,
+    given_name: &str,
+    dry_run: bool,
+    meta: TemplateMeta,
+    force: bool,
+) -> bool {
+    let mut files_to_create: Vec<FileToCreate> = Vec::new();
 
-/// Generate a template from a template
+    if !generate_template_dir(
+        path,
+        new_path,
+        given_name,
+        dry_run,
+        meta,
+        force,
+        &mut files_to_create,
+    ) {
+        return false;
+    }
+
+    for file in files_to_create {
+        if file.is_dir {
+            std::fs::create_dir_all(&file.path).unwrap();
+        } else {
+            let mut new_file = std::fs::File::create(&file.path).unwrap();
+            if let Some(val) = &file.file_content {
+                new_file.write_all(val.as_bytes()).unwrap();
+            }
+
+            let abs_path = std::fs::canonicalize(&file.path).unwrap();
+
+            log!("Created file {}", abs_path.to_str().unwrap());
+        }
+    }
+
+    true
+}
+/// Generate a template directory from a template
 pub(crate) fn generate_template_dir(
     path: &str,
     new_path: &str,
@@ -536,6 +575,7 @@ pub(crate) fn generate_template_dir(
     dry_run: bool,
     meta: TemplateMeta,
     force: bool,
+    files_to_create: &mut Vec<FileToCreate>,
 ) -> bool {
     let paths = std::fs::read_dir(path).unwrap();
     let files_to_ignore = [
@@ -559,7 +599,11 @@ pub(crate) fn generate_template_dir(
 
         if path.is_dir() {
             if !dry_run {
-                std::fs::create_dir_all(&new_path).unwrap();
+                files_to_create.push(FileToCreate {
+                    file_content: None,
+                    is_dir: true,
+                    path: new_path.clone(),
+                });
             }
             if !generate_template_dir(
                 path.to_str().unwrap(),
@@ -568,6 +612,7 @@ pub(crate) fn generate_template_dir(
                 dry_run,
                 meta,
                 force,
+                files_to_create,
             ) {
                 return false;
             }
@@ -578,10 +623,12 @@ pub(crate) fn generate_template_dir(
             dry_run,
             meta,
             force,
+            files_to_create,
         ) {
             return false;
         }
     }
+
     true
 }
 
@@ -593,6 +640,7 @@ pub(crate) fn generate_template_file(
     dry_run: bool,
     meta: TemplateMeta,
     force: bool,
+    files_to_create: &mut Vec<FileToCreate>,
 ) -> bool {
     let file_content = std::fs::read_to_string(path).unwrap();
     let file_content = formater::handle_placeholders(&file_content, given_name, meta);
@@ -613,12 +661,12 @@ pub(crate) fn generate_template_file(
         return true;
     }
 
-    let mut new_file = std::fs::File::create(new_path).unwrap();
-    new_file.write_all(file_content.as_bytes()).unwrap();
+    files_to_create.push(FileToCreate {
+        file_content: Some(file_content),
+        is_dir: false,
+        path: new_path.to_string(),
+    });
 
-    let abs_path = std::fs::canonicalize(new_path).unwrap();
-
-    log!("Created file {}", abs_path.to_str().unwrap());
     true
 }
 

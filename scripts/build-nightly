@@ -1,0 +1,3 @@
+#!/bin/bash
+
+python scripts/py/build_nightly.py

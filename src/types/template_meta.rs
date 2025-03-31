@@ -1,3 +1,4 @@
+use crate::types::snippet::Snippet;
 use crate::types::var_placeholder_collection::VarPlaceholderCollection;
 use yaml_rust::yaml::Yaml;
 use yaml_rust::YamlLoader;
@@ -9,6 +10,7 @@ pub(crate) struct TemplateMeta {
     file_path: String,
     map: std::collections::HashMap<String, String>,
     pub var_placeholder_collection: VarPlaceholderCollection,
+    pub snippets: Vec<Snippet>,
 }
 
 impl TemplateMeta {
@@ -31,11 +33,14 @@ impl TemplateMeta {
             file_path: file_path.clone(),
             map,
             var_placeholder_collection: VarPlaceholderCollection::new(),
+            snippets: Vec::new(),
         }
     }
 
     /// Parse the template meta information from the file system.
     pub fn parse(template_name: String) -> TemplateMeta {
+        // TODO: refactor this method
+
         let mut meta = TemplateMeta::new(template_name.clone());
 
         let file_content = std::fs::read_to_string(meta.file_path.clone());
@@ -73,6 +78,17 @@ impl TemplateMeta {
                     continue;
                 }
 
+                if k == "snippets" {
+                    if !value.is_array() {
+                        // TODO: log error
+                        continue;
+                    }
+                    for snippet in value.as_vec().unwrap() {
+                        let s = Snippet::from_yaml(snippet);
+                        meta.snippets.push(s);
+                    }
+                }
+
                 let mut v_opt = value.as_str();
                 if v_opt.is_none() {
                     v_opt = Some("");
@@ -84,6 +100,21 @@ impl TemplateMeta {
         }
 
         meta
+    }
+
+    /// Parse the placeholders.
+    pub fn handle_placeholders(&mut self, name: &str) {
+        let self_clone = self.clone();
+        for snippet in self.snippets.iter_mut() {
+            snippet.parse_placeholders(name, self_clone.clone());
+        }
+    }
+
+    /// Generate the defined snippets.
+    pub fn generate_snippets(&self) {
+        for snippet in self.snippets.iter() {
+            snippet.clone().generate();
+        }
     }
 
     /// Returns the template name.

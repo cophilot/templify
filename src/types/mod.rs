@@ -1,8 +1,11 @@
 pub mod argument;
 pub mod command;
 pub mod flag;
+pub mod generate_types;
 pub mod global_flag;
 pub mod load_types;
+pub mod placeholder_definition;
+pub mod snippet;
 pub mod status;
 pub mod template_meta;
 pub mod var_placeholder;

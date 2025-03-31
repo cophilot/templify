@@ -185,6 +185,32 @@ pub fn test() {
         .contains_string("opt3");
     utils::run_failure("tpy generate comm test -force -var test1=foo,test2=bar,test3=opt4");
 
+    // test snipptes
+    fs::templates_dir()
+        .dir("Command")
+        .file(".templify.yml")
+        .append_line("snippets:")
+        .append_line(" -    id: snippet1")
+        .append_line("      file: src/commands/subdir/TestCommand.txt")
+        .append_line("      content: This is the snippet one content for $$name$$")
+        .append_line(" -    id: snippet2")
+        .append_line("      file: src/commands/subdir/TestCommand.txt")
+        .append_line("      content: This is the snippet two content with $$test2$$")
+        .append_line("      before: true");
+    fs::templates_dir()
+        .dir("Command")
+        .file("TestCommand.txt")
+        .append_line("// ~~snippet1~~")
+        .append_line("// ~~snippet2~~");
+
+    utils::run_successfully("tpy generate comm snippet_test -force -default-var");
+    fs::dir("src")
+        .dir("commands")
+        .dir("subdir")
+        .file("TestCommand.txt")
+        .contains_string("// ~~snippet1~~\nThis is the snippet one content for snippet_test")
+        .contains_string("This is the snippet two content with default_value\n// ~~snippet2~~");
+
     // test -reload flag
     utils::run_successfully(
         "tpy load https://github.com/cophilot/templify-vault/tree/main/Test/MyTest -t",
@@ -196,6 +222,22 @@ pub fn test() {
         .check_not_exists();
     utils::run_successfully("tpy generate MyTest test -reload");
     fs::dir("src").file("file.txt").check_all_exists();
+
+    fs::templates_dir().dir("MyTest").file("file.txt").remove();
+    fs::templates_dir()
+        .dir("MyTest")
+        .file(".templify.yml")
+        .create();
+    fs::templates_dir().dir("MyTest").file("test.txt").create();
+    fs::templates_dir()
+        .dir("MyTest")
+        .file("$$name$$.txt")
+        .create();
+
+    utils::run_successfully("tpy generate MyTest test1");
+    utils::run_failure("tpy generate MyTest test2");
+    log::contains_line("File ./test.txt already exists.");
+    fs::file("test2.txt").check_not_exists();
 }
 
 fn check_case_conversion_generated_file(file: &mut FSItem) {
