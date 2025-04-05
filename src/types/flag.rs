@@ -55,9 +55,31 @@ impl Flag {
                         return Status::error(format!("Missing value for flag: -{}", name));
                     }
 
-                    let mut v = args[i + 1].clone();
-                    if v.starts_with('-') {
+                    let mut j = i + 1;
+                    let first_val = &args[j];
+
+                    if first_val.starts_with('-') {
                         return Status::error(format!("Missing value for flag: -{}", name));
+                    }
+                    let mut v;
+                    if first_val.starts_with('\'') || first_val.starts_with('"') {
+                        let quote_char = first_val.chars().next();
+                        v = first_val[1..].to_string(); // Skip opening quote
+                        v.push(' ');
+                        j += 1;
+                        // Iterate until closing quote
+                        while j < args.len() {
+                            if args[j].ends_with(quote_char.unwrap()) {
+                                v.push_str(&args[j][..args[j].len() - 1]); // Add without closing quote
+                                break;
+                            } else {
+                                v.push_str(&args[j]);
+                                v.push(' ');
+                            }
+                            j += 1;
+                        }
+                    } else {
+                        v = args[j].clone();
                     }
 
                     if v.starts_with('/') {
@@ -66,8 +88,8 @@ impl Flag {
                     self.value = v;
 
                     // remove the flag and its value from the arguments
-                    args.remove(i);
-                    args.remove(i);
+                    let range = i..=j;
+                    args.drain(range);
                 }
                 return Status::ok();
             }

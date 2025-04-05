@@ -31,6 +31,12 @@ pub(crate) fn definition() -> Command {
         ".".to_string(),
         "Provide a path for the new template.".to_string(),
     ));
+
+    new_command.add_flag(Flag::new_value_flag(
+        vec!["command".to_string(), "cmd".to_string()],
+        ".".to_string(),
+        "Provide a command for the new template.".to_string(),
+    ));
     new_command
 }
 
@@ -58,6 +64,7 @@ pub(crate) fn new(command: &Command) -> Status {
             template_name.clone(),
             command.get_value_flag("description").clone(),
             command.get_value_flag("path").clone(),
+            command.get_value_flag("command").clone(),
         ),
     )
     .unwrap();

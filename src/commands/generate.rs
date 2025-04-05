@@ -185,6 +185,9 @@ pub(crate) fn generate(command: &Command) -> Status {
         std::fs::create_dir_all(&new_path).unwrap();
     }
 
+    let command =
+        utils::formater::handle_placeholders(&meta.get_command(), &given_name, meta.clone());
+
     if utils::template_handler::generate_template(
         &format!(".templates/{}", template_name),
         &new_path,
@@ -199,6 +202,20 @@ pub(crate) fn generate(command: &Command) -> Status {
         }
         meta.generate_snippets();
         log!("Files generated successfully.");
+
+        if !command.trim().is_empty() {
+            log!("Executing Command ...");
+
+            match utils::functions::execute_user_command(command) {
+                Ok(result) => {
+                    log!("{}", result);
+                }
+                Err(e) => {
+                    log!("Error executing command: {}", e);
+                }
+            }
+        }
+
         Status::ok()
     } else {
         Status::error("Files could not be generated.".to_string())

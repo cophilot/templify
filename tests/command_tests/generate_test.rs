@@ -9,8 +9,8 @@ pub fn test() {
     utils::run_failure("tpy generate");
 
     // test name matching and -strict flag
-    utils::run_successfully("tpy new Component -path src/$$name$$/subdir");
-    utils::run_successfully("tpy new Command -path src/commands/subdir");
+    utils::run_successfully( "tpy new Component -path src/$$name$$/subdir -command \"echo Generated template with name $$name$$\"");
+    utils::run_successfully("tpy new Command -path src/commands/subdir -command \'echo Generated template with name $$name$$\'");
     utils::run_failure("tpy generate comp"); // Missing name
     utils::run_failure("tpy generate com test"); // not unique
 
@@ -45,6 +45,7 @@ pub fn test() {
         .check_all_exists();
 
     utils::run_successfully("tpy generate comp foo");
+    log::contains_line("Generated template with name foo");
 
     fs::dir("src")
         .dir("foo")
@@ -109,6 +110,8 @@ pub fn test() {
 
     // test -force flag
     utils::run_successfully("tpy generate comm FOO");
+    log::contains_line("Generated template with name FOO");
+
     fs::dir("src")
         .dir("commands")
         .dir("subdir")
