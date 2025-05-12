@@ -15,6 +15,11 @@ rustup component add rustfmt
 # Install clippy
 rustup component add clippy
 
+# Install specific rust version
+rustup install 1.82.0
+rustup default 1.82.0
+
+
 # Set git hooks
 git config --local core.hooksPath .githooks/
 
