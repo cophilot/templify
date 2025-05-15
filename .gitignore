@@ -6,3 +6,4 @@ dev/
 tpy-test-dir
 command.md
 .templify-test-dir
+tpy-test.log
