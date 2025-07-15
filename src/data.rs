@@ -13,6 +13,7 @@ pub fn templify_file_blank(
 
 #description: The description of the template 
 #path: The path where the file should be generated based on the project root (you can also use placeholders here)
+#command: The command that will be executed after the template is created. This command will run in the template's directory.
 #vars: # Define a variable placeholders that can be used in the file content
 #   - package # Variable Placeholder
 #   - subdir(src) # Variable Placeholder with default value

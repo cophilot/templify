@@ -204,13 +204,16 @@ pub(crate) fn generate(command: &Command) -> Status {
         log!("Files generated successfully.");
 
         if !command.trim().is_empty() {
-            log!("Executing Command ...");
+            log!("Executing Command: {}", command);
 
             match utils::functions::execute_user_command(command) {
                 Ok(result) => {
                     log!("{}", result);
                 }
                 Err(e) => {
+                    if let Some(stderr) = e.to_string().lines().next() {
+                        log!("{}", stderr);
+                    }
                     log!("Error executing command: {}", e);
                 }
             }

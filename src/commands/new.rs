@@ -35,7 +35,7 @@ pub(crate) fn definition() -> Command {
     new_command.add_flag(Flag::new_value_flag(
         vec!["command".to_string(), "cmd".to_string()],
         ".".to_string(),
-        "Provide a command for the new template.".to_string(),
+        "Provide a command that will be executed after the template is created. This command will run in the template's directory.".to_string(),
     ));
     new_command
 }
