@@ -1,13 +1,19 @@
 use crate::placeholder_storage::get_all_placeholders;
 
 /// Get the content for a new templify file
-pub fn templify_file_blank(name: String, description: String, path: String) -> String {
+pub fn templify_file_blank(
+    name: String,
+    description: String,
+    path: String,
+    command: String,
+) -> String {
     let content = format!("# This is the '{}' template
 # This file is used by templify to generate new files from this template.
 # You can use the following variables in this file:
 
 #description: The description of the template 
 #path: The path where the file should be generated based on the project root (you can also use placeholders here)
+#command: The command that will be executed after the template is created. This command will run in the template's directory.
 #vars: # Define a variable placeholders that can be used in the file content
 #   - package # Variable Placeholder
 #   - subdir(src) # Variable Placeholder with default value
@@ -23,9 +29,12 @@ pub fn templify_file_blank(name: String, description: String, path: String) -> S
 # IMPORTANT: Lines starting with a . are auto generated and should not be changed.
 
 description: {}
-path: {}
-", name, description, path);
-
+path: {}{}
+", name, description, path, if command.trim().is_empty() || command.trim() == "." {
+        String::new()
+    } else {
+        format!("\ncommand: {}", command)
+    });
     content.to_string()
 }
 

@@ -21,6 +21,7 @@ impl TemplateMeta {
         map.insert("description".to_string(), "".to_string());
         map.insert("path".to_string(), ".".to_string());
         map.insert(".source".to_string(), "".to_string());
+        map.insert("command".to_string(), "".to_string());
 
         let mut file_path = format!(".templates/{}/.templify.yaml", template_name);
         if !std::path::Path::new(&file_path).exists() {
@@ -134,5 +135,10 @@ impl TemplateMeta {
     /// Returns the source that is specified in the template meta information.
     pub fn get_source(&self) -> String {
         self.map[".source"].clone()
+    }
+
+    /// Returns the command that is specified in the template meta information.
+    pub fn get_command(&self) -> String {
+        self.map["command"].clone()
     }
 }
