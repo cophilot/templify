@@ -29,10 +29,12 @@ pub fn templify_file_blank(
 # IMPORTANT: Lines starting with a . are auto generated and should not be changed.
 
 description: {}
-path: {}
-command: {}
-", name, description, path,command);
-
+path: {}{}
+", name, description, path, if command.trim().is_empty() || command.trim() == "." {
+        String::new()
+    } else {
+        format!("\ncommand: {}", command)
+    });
     content.to_string()
 }
 
