@@ -2,6 +2,12 @@
 
 ---
 
+## [v2.1.0](https://github.com/cophilot/templify/milestone/2) (2025-??-??) _IN DEVELOPMENT_
+
+-   Added execution of command after the generation of a template [#2](https://github.com/cophilot/templify/issues/2)
+
+---
+
 ## [v2.0.1](https://github.com/cophilot/templify/milestone/2) (2025-2-19)
 
 -   Bug fixes [#20](https://github.com/cophilot/templify/issues/20)
