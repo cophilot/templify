@@ -211,6 +211,38 @@ pub fn test() {
         .contains_string("// ~~snippet1~~\nThis is the snippet one content for snippet_test")
         .contains_string("This is the snippet two content with default_value\n// ~~snippet2~~");
 
+    // test snippets with offset
+    fs::templates_dir()
+        .dir("Command")
+        .file(".templify.yml")
+        .remove()
+        .create()
+        .append_line("snippets:")
+        .append_line(" -    id: snippet_offset1")
+        .append_line("      file: src/commands/subdir/TestCommand.txt")
+        .append_line("      content: Content with offset after")
+        .append_line("      offset: 2")
+        .append_line(" -    id: snippet_offset2")
+        .append_line("      file: src/commands/subdir/TestCommand.txt")
+        .append_line("      content: Content with offset before")
+        .append_line("      before: true")
+        .append_line("      offset: 2");
+    fs::templates_dir()
+        .dir("Command")
+        .file("TestCommand.txt")
+        .remove()
+        .create()
+        .append_line("// ~~snippet_offset1~~")
+        .append_line("// ~~snippet_offset2~~");
+
+    utils::run_successfully("tpy generate comm offset_test -force");
+    fs::dir("src")
+        .dir("commands")
+        .dir("subdir")
+        .file("TestCommand.txt")
+        .contains_string("// ~~snippet_offset1~~\n\n\nContent with offset after")
+        .contains_string("Content with offset before\n\n\n// ~~snippet_offset2~~");
+
     // test -reload flag
     utils::run_successfully(
         "tpy load https://github.com/cophilot/templify-vault/tree/main/Test/MyTest -t",
