@@ -10,6 +10,7 @@ pub(crate) struct Snippet {
     pub file_name: String,
     pub content: String,
     pub before: bool,
+    pub offset: i32,
 }
 
 impl Snippet {
@@ -19,11 +20,13 @@ impl Snippet {
         let file_name = yaml["file"].as_str().unwrap_or("").to_string();
         let content = yaml["content"].as_str().unwrap_or("").to_string();
         let before = yaml["before"].as_bool().unwrap_or(false);
+        let offset = yaml["offset"].as_i64().unwrap_or(0) as i32;
         Snippet {
             id,
             file_name,
             content,
             before,
+            offset,
         }
     }
 
@@ -51,8 +54,16 @@ impl Snippet {
             if line.contains(&raw_id) {
                 if self.before {
                     self.clone().add_content(&mut new_lines);
+                    // Add offset empty lines after content (before the ID)
+                    for _ in 0..self.offset {
+                        new_lines.push(String::new());
+                    }
                 } else {
                     new_lines.push(line.to_string());
+                    // Add offset empty lines after ID (before the content)
+                    for _ in 0..self.offset {
+                        new_lines.push(String::new());
+                    }
                     self.clone().add_content(&mut new_lines);
                     skip_insert = true;
                 }
