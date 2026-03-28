@@ -35,29 +35,29 @@ For a more detailed documentation visit the [templify-docs](https://templify.phi
 
 ---
 
--   [Concept](#concept)
--   [Installation](#installation)
-    -   [Linux / macOS](#linux--macos)
-    -   [Windows](#windows)
--   [Docker](#docker)
--   [Development](#development)
-    -   [Installation](#installation-1)
-    -   [CI Pipeline](#ci-pipeline)
--   [Templates](#templates)
--   [.templify.yml](#templifyyml)
--   [Usage](#usage)
-    -   [help](#help)
-    -   [version](#version)
-    -   [init](#init)
-    -   [new](#new)
-    -   [load](#load)
-    -   [list](#list)
-    -   [generate](#generate)
--   [Placeholders](#placeholders)
-    -   [Case conversion](#case-conversion)
--   [templify-vault](#templify-vault)
--   [Bugs](#bugs)
--   [Release Notes](#release-notes)
+- [Concept](#concept)
+- [Installation](#installation)
+    - [Linux / macOS](#linux--macos)
+    - [Windows](#windows)
+- [Docker](#docker)
+- [Development](#development)
+    - [Installation](#installation-1)
+    - [CI Pipeline](#ci-pipeline)
+- [Templates](#templates)
+- [.templify.yml](#templifyyml)
+- [Usage](#usage)
+    - [help](#help)
+    - [version](#version)
+    - [init](#init)
+    - [new](#new)
+    - [load](#load)
+    - [list](#list)
+    - [generate](#generate)
+- [Placeholders](#placeholders)
+    - [Case conversion](#case-conversion)
+- [templify-vault](#templify-vault)
+- [Bugs](#bugs)
+- [Release Notes](#release-notes)
 
 ---
 
@@ -142,10 +142,10 @@ TODO
 
 The CI pipeline ensures the quality of the code. It runs the following checks:
 
--   **Format Check**: Checks if the code is formatted correctly (Script: [format-check](scripts/format-check))
--   **Comment Check**: Checks if the code contains enough comments (Script: [comment-check](scripts/comment-check))
--   **Linter**: Checks if the code is linted correctly (Script: [lint](scripts/lint))
--   **Test**: Runs the test suite (Script: [test](scripts/test))
+- **Format Check**: Checks if the code is formatted correctly (Script: [format-check](scripts/format-check))
+- **Comment Check**: Checks if the code contains enough comments (Script: [comment-check](scripts/comment-check))
+- **Linter**: Checks if the code is linted correctly (Script: [lint](scripts/lint))
+- **Test**: Runs the test suite (Script: [test](scripts/test))
 
 > You can find the pipeline configuration in the [.github/workflows/check_rust_quality.yml](.github/workflows/check_rust_quality.yml) file.
 
@@ -162,8 +162,8 @@ Each template must contain a `.templify.yml` file that specifies some metadata a
 
 The `.templify.yml` file contains metadata about the template. It is a YAML file with the following keys:
 
--   `description`: A short description of the template
--   `path`: The path where the generated files should be placed based on the root of the project. This can also be a path with [placeholders](#placeholders) in it.
+- `description`: A short description of the template
+- `path`: The path where the generated files should be placed based on the root of the project. This can also be a path with [placeholders](#placeholders) in it.
 
 ---
 
@@ -235,12 +235,12 @@ Generates a file from the given template.
 
 ## Placeholders
 
--   `$$name$$`: The name of the new file (This placeholder supports case conversion).
--   `$$year$$`: The current year.
--   `$$month$$`: The current month as a number.
--   `$$month-name$$`: The current month as a name.
--   `$$day$$`: The current day.
--   `$$git-name$$`: The name of the git user.
+- `$$name$$`: The name of the new file (This placeholder supports case conversion).
+- `$$year$$`: The current year.
+- `$$month$$`: The current month as a number.
+- `$$month-name$$`: The current month as a name.
+- `$$day$$`: The current day.
+- `$$git-name$$`: The name of the git user.
 
 ### Case conversion
 
@@ -250,14 +250,14 @@ _Example: `$$name.kebab$$`_
 
 You can use the following case conversion:
 
--   `$$<placeholder>.lower$$`: Lower case (e.g. `mycomponent`)
--   `$$<placeholder>.upper$$`: Upper case (e.g. `MYCOMPONENT`)
--   `$$<placeholder>.camel$$`: Camel case (e.g. `myComponent`)
--   `$$<placeholder>.snake$$`: Snake case (e.g. `my_component`)
--   `$$<placeholder>.kebab$$`: Kebab case (e.g. `my-component`)
--   `$$<placeholder>.pascal$$`: Pascal case (e.g. `MyComponent`)
--   `$$<placeholder>.macro$$`: Macro case (e.g. `MY_COMPONENT`)
--   `$$<placeholder>.train$$`: Train case (e.g. `My-Component`)
+- `$$<placeholder>.lower$$`: Lower case (e.g. `mycomponent`)
+- `$$<placeholder>.upper$$`: Upper case (e.g. `MYCOMPONENT`)
+- `$$<placeholder>.camel$$`: Camel case (e.g. `myComponent`)
+- `$$<placeholder>.snake$$`: Snake case (e.g. `my_component`)
+- `$$<placeholder>.kebab$$`: Kebab case (e.g. `my-component`)
+- `$$<placeholder>.pascal$$`: Pascal case (e.g. `MyComponent`)
+- `$$<placeholder>.macro$$`: Macro case (e.g. `MY_COMPONENT`)
+- `$$<placeholder>.train$$`: Train case (e.g. `My-Component`)
 
 ---
 
@@ -277,15 +277,16 @@ tpy load https://github.com/cophilot/templify-vault/tree/main/React-ts
 
 ## Bugs
 
--   _no known bugs_
+- _no known bugs_
 
 ---
 
 ## [Release Notes](https://github.com/cophilot/templify/blob/master/CHANGELOG.md)
 
-## [v2.0.1](https://github.com/cophilot/templify/milestone/2)
+### [v2.1.0](https://github.com/cophilot/templify/milestone/4)
 
--   Bug fixes [#20](https://github.com/cophilot/templify/issues/20)
+- Added execution of command after the generation of a template [#2](https://github.com/cophilot/templify/issues/2)
+- Bug fix when loading remote templates [#37](https://github.com/cophilot/templify/issues/37)
 
 ---
 

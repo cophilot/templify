@@ -2,7 +2,7 @@
 
 ---
 
-## [v2.1.0](https://github.com/cophilot/templify/milestone/2) (2026-03-28)
+## [v2.1.0](https://github.com/cophilot/templify/milestone/4) (2026-03-28)
 
 - Added execution of command after the generation of a template [#2](https://github.com/cophilot/templify/issues/2)
 - Bug fix when loading remote templates [#37](https://github.com/cophilot/templify/issues/37)
