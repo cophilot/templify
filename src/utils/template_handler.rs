@@ -5,8 +5,10 @@ use crate::types::load_types::URLType;
 use crate::types::status::Status;
 use crate::types::template_meta::TemplateMeta;
 use crate::utils::formater;
+use crate::utils::functions::{extract_github_tree_items, github_url_to_raw};
 use base64::{engine::general_purpose::STANDARD, Engine as _};
 use regex::Regex;
+use reqwest::blocking::get;
 use std::io::Write;
 use std::path::Path;
 
@@ -130,7 +132,7 @@ pub(crate) fn load_remote_template_collection(path: &str, url: &str, force: bool
     let response: serde_json::Value = response.unwrap();
 
     let items = match url_type {
-        URLType::GitHub => response["payload"]["tree"]["items"].as_array().unwrap(),
+        URLType::GitHub => extract_github_tree_items(&response),
         URLType::GitLab => response.as_array().unwrap(),
     };
 
@@ -278,7 +280,7 @@ fn load_gitlab_template(response: serde_json::Value, path: &str, url: &str, forc
 
 /// Load a template from a github repository
 fn load_github_template(response: serde_json::Value, path: &str, url: &str, force: bool) -> Status {
-    let items = response["payload"]["tree"]["items"].as_array().unwrap();
+    let items = extract_github_tree_items(&response);
 
     for item in items {
         let formatted_path = &format_path_or_url(path, item);
@@ -329,7 +331,7 @@ fn load_remote_template_dir(path: &str, url: &str, force: bool) -> Status {
         ));
     }
     let response: serde_json::Value = response.unwrap();
-    let items = response["payload"]["tree"]["items"].as_array().unwrap();
+    let items = extract_github_tree_items(&response);
 
     for item in items {
         if item["contentType"] == "directory" {
@@ -424,30 +426,23 @@ fn load_remote_template_file(path: &str, url: &str, force: bool) -> Status {
         ));
     }
 
-    let response = rest::json_call(url);
+    let url = github_url_to_raw(url);
+
+    let response = get(&url);
     if response.is_err() {
         return Status::error(format!(
             "Failed to get template from {}: Request failed",
-            url
+            &url
         ));
     }
-    let response = response.unwrap().json();
-    if response.is_err() {
+    let text = response.unwrap().text();
+    if text.is_err() {
         return Status::error(format!(
-            "Failed to get template from {}: JSON parse error",
-            url
+            "Failed to get template from {}: Text parse error",
+            &url
         ));
     }
-    let response: serde_json::Value = response.unwrap();
-
-    let text = response["payload"]["blob"]["rawLines"].as_array().unwrap();
-    let mut text = text
-        .iter()
-        .map(|x| x.as_str().unwrap())
-        .collect::<Vec<&str>>()
-        .join("\n");
-
-    text = text.replace("\\n", "\n");
+    let text = text.unwrap().replace("\\n", "\n");
 
     // create all subdirs if they don't exist
     let path_dir = path.split('/').collect::<Vec<&str>>();

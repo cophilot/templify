@@ -48,11 +48,14 @@ pub(crate) fn init(command: &Command) -> Status {
     // check if there is an internet connection
     if utils::functions::check_internet_connection() && !command.get_bool_flag("offline") {
         log!("Loading example template from templify-vault...");
-        utils::template_handler::load_remote_template_collection(
+        let st = utils::template_handler::load_remote_template_collection(
             ".templates",
             "https://github.com/cophilot/templify-vault/tree/main/Example",
             true,
         );
+        if !st.is_ok {
+            return st;
+        }
     }
     log!("templify initialized successfully.");
 

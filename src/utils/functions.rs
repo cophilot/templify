@@ -1,5 +1,6 @@
 use crate::{logger, types::status::Status};
 use chrono::Datelike;
+use serde_json::Value;
 use std::io::{Error, ErrorKind};
 use std::process::Command;
 use std::{io::Write, path::Path};
@@ -145,4 +146,34 @@ pub fn execute_user_command(command: String) -> Result<String, std::io::Error> {
     }
 
     String::from_utf8(output.stdout).map_err(|e| Error::new(ErrorKind::InvalidData, e.to_string()))
+}
+
+/// Extract the tree items from the github response
+///
+/// # Arguments
+///
+/// - `response` (`&serde_json`) - The response from the github api.
+///
+/// # Returns
+///
+/// - `&Vec<Value>` - The tree items from the github response.
+pub fn extract_github_tree_items(response: &serde_json::Value) -> &Vec<Value> {
+    response["payload"]["codeViewTreeRoute"]["tree"]["items"]
+        .as_array()
+        .unwrap()
+}
+
+/// Convert a github url to a raw url
+///
+/// # Arguments
+///
+/// - `url` (`&str`) - The github url to convert (e.g. `https://github.com/user/repo/blob/main/file.rs`).
+///
+/// # Returns
+///
+/// - `String` - The raw url (e.g. `https://raw.githubusercontent.com/user/repo/main/file.rs`).
+pub fn github_url_to_raw(url: &str) -> String {
+    url.replace("github.com", "raw.githubusercontent.com")
+        .replace("/blob/", "/")
+        .replace("/tree/", "/")
 }
