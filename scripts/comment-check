@@ -1,3 +1,9 @@
 #!/bin/bash
 
 python scripts/py/check_comment.py
+
+if [ $? -ne 0 ]; then
+    echo "❌ Code comment check failed. Please ensure all public items have appropriate comments."
+    exit 1
+fi
+echo "✅ Code comment check passed."

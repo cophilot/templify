@@ -4,3 +4,9 @@ rustup component add rustfmt > /dev/null 2>&1
 
 cargo fmt --version
 cargo fmt --all -- --check
+
+if [ $? -ne 0 ]; then
+    echo "❌ Code formatting check failed. Please run 'cargo fmt' to format the code."
+    exit 1
+fi
+echo "✅ Code format check passed."

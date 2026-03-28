@@ -3,3 +3,9 @@
 rustup component add clippy  > /dev/null 2>&1
 cargo clippy --version
 cargo clippy -- -D warnings
+
+if [ $? -ne 0 ]; then
+    echo "❌ Linting failed. Please fix the above issues."
+    exit 1
+fi
+echo "✅ Linting passed."
